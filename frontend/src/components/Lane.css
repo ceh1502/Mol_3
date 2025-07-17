@@ -1,0 +1,78 @@
+.lane {
+  width: 100px;
+  height: 600px;
+  position: relative;
+  border: 2px solid #333;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.lane-0 {
+  background: linear-gradient(180deg, rgba(255, 0, 0, 0.2) 0%, rgba(255, 0, 0, 0.1) 100%);
+  border-color: #ff6b6b;
+}
+
+.lane-1 {
+  background: linear-gradient(180deg, rgba(0, 255, 0, 0.2) 0%, rgba(0, 255, 0, 0.1) 100%);
+  border-color: #51cf66;
+}
+
+.lane-2 {
+  background: linear-gradient(180deg, rgba(0, 0, 255, 0.2) 0%, rgba(0, 0, 255, 0.1) 100%);
+  border-color: #339af0;
+}
+
+.lane-3 {
+  background: linear-gradient(180deg, rgba(255, 255, 0, 0.2) 0%, rgba(255, 255, 0, 0.1) 100%);
+  border-color: #ffd43b;
+}
+
+.lane-header {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 2px solid #333;
+}
+
+.key-label {
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.lane-track {
+  height: 480px;
+  position: relative;
+}
+
+.hit-zone {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.2);
+  border-top: 3px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hit-line {
+  width: 80%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #fff, transparent);
+  border-radius: 2px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
