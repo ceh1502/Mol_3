@@ -76,3 +76,25 @@
   0%, 100% { opacity: 0.6; }
   50% { opacity: 1; }
 }
+
+.lane-pressed {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+  transition: all 0.1s ease;
+}
+
+.lane-pressed.lane-0 {
+  box-shadow: 0 0 20px rgba(255, 107, 107, 0.8);
+}
+
+.lane-pressed.lane-1 {
+  box-shadow: 0 0 20px rgba(81, 207, 102, 0.8);
+}
+
+.lane-pressed.lane-2 {
+  box-shadow: 0 0 20px rgba(51, 154, 240, 0.8);
+}
+
+.lane-pressed.lane-3 {
+  box-shadow: 0 0 20px rgba(255, 212, 59, 0.8);
+}

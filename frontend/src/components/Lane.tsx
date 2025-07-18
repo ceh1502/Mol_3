@@ -7,11 +7,12 @@ interface LaneProps {
   laneIndex: number;
   notes: Note[];
   keyLabel: string;
+  isPressed?: boolean;
 }
 
-const Lane: React.FC<LaneProps> = ({ laneIndex, notes, keyLabel }) => {
+const Lane: React.FC<LaneProps> = ({ laneIndex, notes, keyLabel, isPressed = false }) => {
   return (
-    <div className={`lane lane-${laneIndex}`}>
+    <div className={`lane lane-${laneIndex} ${isPressed ? 'lane-pressed' : ''}`}>
       <div className="lane-header">
         <span className="key-label">{keyLabel}</span>
       </div>

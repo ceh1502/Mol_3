@@ -14,6 +14,7 @@ const GameArea: React.FC = () => {
   });
 
   const [lastJudgment, setLastJudgment] = useState<string | null>(null);
+  const [pressedKeys, setPressedKeys] = useState<Set<number>>(new Set());
 
   // 노트 생성 함수
   const createNote = useCallback((lane: number): Note => {
@@ -67,6 +68,16 @@ const GameArea: React.FC = () => {
       default:
         return;
     }
+
+    // 시각적 효과를 위한 키 누름 상태 추가
+    setPressedKeys(prev => new Set(Array.from(prev).concat(lane)));
+    setTimeout(() => {
+      setPressedKeys(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(lane);
+        return newSet;
+      });
+    }, 150);
 
     // 해당 레인에서 가장 가까운 노트 찾기
     const laneNotes = gameState.notes.filter(note => note.lane === lane && !note.hit);
@@ -163,6 +174,7 @@ const GameArea: React.FC = () => {
             laneIndex={laneIndex}
             notes={gameState.notes.filter(note => note.lane === laneIndex)}
             keyLabel={['A', 'S', 'K', 'L'][laneIndex]}
+            isPressed={pressedKeys.has(laneIndex)}
           />
         ))}
       </div>
