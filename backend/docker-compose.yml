@@ -1,6 +1,6 @@
 # Docker Compose 설정 파일
 # 로컬 개발 환경에서 전체 시스템을 구동하기 위한 설정
-version: '3.8'
+version: "3.8"
 
 services:
   # Redis 캐시 및 큐 서비스
@@ -38,7 +38,7 @@ services:
       - /app/node_modules
     command: npm run dev
 
-  # Python AI Service (GPU 지원)
+  # Python AI Service
   ai-service:
     build:
       context: ./ai-service
@@ -59,14 +59,8 @@ services:
     volumes:
       - ./ai-service:/app
       - ai_models:/app/models
-      - temp_audio:/tmp/audio
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+      - ./audio_json:/tmp/audio_json
+    command: uvicorn src.main:app --host 0.0.0.0 --reload --app-dir /app
 
   # PostgreSQL 데이터베이스 (선택사항)
   postgres:

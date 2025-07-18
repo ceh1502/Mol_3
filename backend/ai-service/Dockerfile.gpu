@@ -1,6 +1,6 @@
 # Python AI Service Dockerfile (GPU 지원)
 # GPU 기반 오디오 분석 및 비트맵 생성을 위한 컨테이너
-FROM nvidia/cuda:11.8-devel-ubuntu22.04
+FROM nvidia/cuda:11.8.0-devel-ubuntu22.04
 
 # 환경 변수 설정
 ENV PYTHONUNBUFFERED=1
@@ -38,7 +38,11 @@ RUN pip install torch torchvision torchaudio --index-url https://download.pytorc
 
 # requirements.txt 복사 및 Python 의존성 설치
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+# 1) 먼저 Cython + 필요 패키지를 설치
+RUN pip install --no-cache-dir cython numpy scipy mido
+
+# 2) 그 다음 requirements.txt를 통해 나머지 의존성 설치 (madmom 포함)
+RUN pip install --no-cache-dir -r requirements.txt
 
 # yt-dlp 최신 버전 설치
 RUN pip install --upgrade yt-dlp
