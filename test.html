@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rhythm Game Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { padding: 10px 20px; margin: 10px; font-size: 16px; }
+        #result { margin: 20px 0; padding: 10px; background: #f0f0f0; }
+    </style>
+</head>
+<body>
+    <h1>Rhythm Game API Test</h1>
+    <button onclick="testBeatmap()">Load Test Beatmap</button>
+    <div id="result"></div>
+
+    <script>
+        async function testBeatmap() {
+            try {
+                const response = await fetch('http://localhost:8000/f0a648ba-8f39-4691-910f-aa10b8fdf042.json');
+                const data = await response.json();
+                
+                document.getElementById('result').innerHTML = `
+                    <h3>✅ Beatmap Loaded Successfully!</h3>
+                    <p><strong>BPM:</strong> ${data.tempo}</p>
+                    <p><strong>Total Events:</strong> ${data.events.length}</p>
+                    <p><strong>Duration:</strong> ${Math.max(...data.events.map(e => e.time)).toFixed(2)} seconds</p>
+                `;
+            } catch (error) {
+                document.getElementById('result').innerHTML = `
+                    <h3>❌ Error Loading Beatmap</h3>
+                    <p>${error.message}</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
