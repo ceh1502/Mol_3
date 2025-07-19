@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rhythm Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .game-area {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .lanes {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .lane {
+            width: 80px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #fff;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        .lane-0 { border-color: #ff6b6b; }
+        .lane-1 { border-color: #51cf66; }
+        .lane-2 { border-color: #339af0; }
+        .lane-3 { border-color: #ffd43b; }
+        .key-label {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .note {
+            width: 70px;
+            height: 20px;
+            background: #ff6b6b;
+            border-radius: 5px;
+            position: absolute;
+            left: 5px;
+            animation: fall 2s linear;
+        }
+        @keyframes fall {
+            from { top: 0; }
+            to { top: 400px; }
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .score {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Rhythm Game</h1>
+        
+        <div class="status">
+            <div>Status: <span id="status">Ready</span></div>
+            <div>Beatmap: <span id="beatmap-info">Not loaded</span></div>
+        </div>
+        
+        <div class="score">
+            Score: <span id="score">0</span> | Combo: <span id="combo">0</span>
+        </div>
+        
+        <div class="controls">
+            <button onclick="loadBeatmap()">Load Test Beatmap</button>
+            <button onclick="startGame()">Start Game</button>
+            <button onclick="resetGame()">Reset</button>
+        </div>
+        
+        <audio id="gameAudio" controls style="margin: 10px 0;">
+            <source src="빌려온고양이.mp3" type="audio/mpeg">
+            음악 파일을 찾을 수 없습니다.
+        </audio>
+        
+        <div class="game-area">
+            <div class="lanes">
+                <div class="lane lane-0">
+                    <div class="key-label">A</div>
+                </div>
+                <div class="lane lane-1">
+                    <div class="key-label">S</div>
+                </div>
+                <div class="lane lane-2">
+                    <div class="key-label">K</div>
+                </div>
+                <div class="lane lane-3">
+                    <div class="key-label">L</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status">
+            <p>Press A, S, K, L keys to hit the notes!</p>
+        </div>
+    </div>
+
+    <script>
+        let beatmap = null;
+        let gameStarted = false;
+        let notes = [];
+        let score = 0;
+        let combo = 0;
+        let startTime = 0;
+
+        async function loadBeatmap() {
+            try {
+                document.getElementById('status').textContent = 'Loading...';
+                const response = await fetch('http://localhost:8001/f0a648ba-8f39-4691-910f-aa10b8fdf042.json');
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load beatmap');
+                }
+                
+                beatmap = await response.json();
+                document.getElementById('beatmap-info').textContent = `${beatmap.events.length} events, BPM: ${beatmap.tempo.toFixed(1)}`;
+                document.getElementById('status').textContent = 'Beatmap loaded!';
+                
+                console.log('Loaded beatmap:', beatmap);
+            } catch (error) {
+                console.error('Error loading beatmap:', error);
+                document.getElementById('status').textContent = 'Error loading beatmap';
+                document.getElementById('beatmap-info').textContent = error.message;
+            }
+        }
+
+        function startGame() {
+            if (!beatmap) {
+                alert('Please load a beatmap first!');
+                return;
+            }
+            
+            if (gameStarted) {
+                alert('Game already started!');
+                return;
+            }
+            
+            gameStarted = true;
+            startTime = Date.now();
+            document.getElementById('status').textContent = 'Playing...';
+            
+            // 음악 재생
+            const audio = document.getElementById('gameAudio');
+            audio.currentTime = 0;
+            audio.play().catch(e => console.log('Audio play failed:', e));
+            
+            // 모든 노트 생성
+            beatmap.events.forEach((event, index) => {
+                setTimeout(() => {
+                    createNote(event.lane, event.type);
+                }, event.time * 1000);
+            });
+            
+            console.log(`Game started! ${beatmap.events.length} notes scheduled.`);
+        }
+
+        function createNote(lane, type) {
+            const laneElement = document.querySelector(`.lane-${lane}`);
+            const note = document.createElement('div');
+            note.className = 'note';
+            note.style.backgroundColor = type === 'strong' ? '#ff4757' : '#5352ed';
+            
+            laneElement.appendChild(note);
+            
+            // 2초 후 노트 제거
+            setTimeout(() => {
+                if (note.parentNode) {
+                    note.parentNode.removeChild(note);
+                }
+            }, 2000);
+        }
+
+        function resetGame() {
+            gameStarted = false;
+            score = 0;
+            combo = 0;
+            document.getElementById('score').textContent = '0';
+            document.getElementById('combo').textContent = '0';
+            document.getElementById('status').textContent = 'Ready';
+            
+            // 음악 중지
+            const audio = document.getElementById('gameAudio');
+            audio.pause();
+            audio.currentTime = 0;
+            
+            // 모든 노트 제거
+            document.querySelectorAll('.note').forEach(note => {
+                note.parentNode.removeChild(note);
+            });
+        }
+
+        // 키보드 입력 처리
+        document.addEventListener('keydown', (event) => {
+            if (!gameStarted) return;
+            
+            let lane = -1;
+            switch (event.key.toLowerCase()) {
+                case 'a': lane = 0; break;
+                case 's': lane = 1; break;
+                case 'k': lane = 2; break;
+                case 'l': lane = 3; break;
+                default: return;
+            }
+            
+            // 레인 빛나는 효과
+            const laneElement = document.querySelector(`.lane-${lane}`);
+            laneElement.style.boxShadow = '0 0 20px rgba(255, 255, 255, 0.8)';
+            laneElement.style.transform = 'scale(1.05)';
+            
+            setTimeout(() => {
+                laneElement.style.boxShadow = '';
+                laneElement.style.transform = '';
+            }, 150);
+            
+            // 점수 증가
+            score += 10;
+            combo += 1;
+            document.getElementById('score').textContent = score;
+            document.getElementById('combo').textContent = combo;
+        });
+
+        // 페이지 로드 시 상태 확인
+        window.onload = function() {
+            console.log('Game loaded! Backend should be at http://localhost:8000');
+        };
+    </script>
+</body>
+</html>
