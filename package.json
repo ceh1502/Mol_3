@@ -1,0 +1,14 @@
+{
+  "name": "rhythm-game",
+  "version": "1.0.0",
+  "description": "Korean Rhythm Game - 빌려온고양이",
+  "main": "serve-beatmap.js",
+  "scripts": {
+    "start": "node serve-beatmap.js",
+    "dev": "node serve-beatmap.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  }
+}
