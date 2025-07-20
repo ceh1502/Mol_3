@@ -7,114 +7,340 @@
     <style>
         body {
             margin: 0;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             color: white;
+            overflow-x: hidden;
+            height: 100vh;
         }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: center;
+        .game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        .game-area {
-            background: rgba(0, 0, 0, 0.3);
+        
+        /* 상단 UI 영역 */
+        .top-ui {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 40px;
+            box-sizing: border-box;
+        }
+        
+        /* 체력 바 (왼쪽 위) */
+        .health-bar {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px 20px;
+            border-radius: 15px;
+            border: 2px solid #ff6b6b;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+        }
+        
+        .health-label {
+            font-size: 16px;
+            font-weight: bold;
+            margin-right: 15px;
+            color: #ff6b6b;
+        }
+        
+        .hearts {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .heart {
+            width: 25px;
+            height: 25px;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: relative;
+            transform: rotate(-45deg);
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+        
+        .heart::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: -50%;
+            width: 25px;
+            height: 40px;
+            background: inherit;
+            border-radius: 50px 50px 0 0;
+            transform: translateX(-50%) rotate(-45deg);
+            transform-origin: 0 100%;
+        }
+        
+        .heart::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: -50%;
+            width: 25px;
+            height: 40px;
+            background: inherit;
+            border-radius: 50px 50px 0 0;
+            transform: rotate(45deg);
+            transform-origin: 100% 100%;
+        }
+        
+        @keyframes heartbeat {
+            0%, 100% { transform: rotate(-45deg) scale(1); }
+            50% { transform: rotate(-45deg) scale(1.1); }
+        }
+        
+        /* 점수 영역 (오른쪽 위) */
+        .score-area {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 2px solid #4ecdc4;
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
+            text-align: right;
+        }
+        
+        .score-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #4ecdc4;
+            text-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+        }
+        
+        .score-label {
+            font-size: 14px;
+            color: #4ecdc4;
+            margin-top: 5px;
+        }
+        /* 노래 제목 영역 (점수 밑) */
+        .song-info {
+            position: absolute;
+            top: 100px;
+            right: 40px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 20px;
             border-radius: 10px;
+            border: 1px solid #ffd93d;
+            box-shadow: 0 0 15px rgba(255, 217, 61, 0.2);
+            z-index: 100;
+        }
+        
+        .song-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffd93d;
+            text-shadow: 0 0 8px rgba(255, 217, 61, 0.4);
+        }
+        
+        /* 콤보 영역 (오른쪽 가운데) */
+        .combo-area {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.7);
             padding: 20px;
-            margin: 20px 0;
+            border-radius: 20px;
+            border: 3px solid #a55eea;
+            box-shadow: 0 0 25px rgba(165, 94, 234, 0.4);
+            text-align: center;
+            z-index: 100;
+        }
+        
+        .combo-value {
+            font-size: 48px;
+            font-weight: bold;
+            color: #a55eea;
+            text-shadow: 0 0 15px rgba(165, 94, 234, 0.6);
+            animation: comboGlow 2s ease-in-out infinite;
+        }
+        
+        .combo-label {
+            font-size: 16px;
+            color: #a55eea;
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        @keyframes comboGlow {
+            0%, 100% { text-shadow: 0 0 15px rgba(165, 94, 234, 0.6); }
+            50% { text-shadow: 0 0 25px rgba(165, 94, 234, 0.9), 0 0 35px rgba(165, 94, 234, 0.6); }
+        }
+        
+        /* 게임 영역 */
+        .game-area {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.1);
+            position: relative;
         }
         .lanes {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
+            gap: 15px;
+            height: 600px;
+            position: relative;
         }
+        
         .lane {
-            width: 80px;
-            height: 400px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid #fff;
-            border-radius: 10px;
+            width: 100px;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.15) 100%);
+            border: 3px solid;
+            border-radius: 15px;
             position: relative;
             overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
         }
-        .lane-0 { border-color: #ff6b6b; }
-        .lane-1 { border-color: #51cf66; }
-        .lane-2 { border-color: #339af0; }
-        .lane-3 { border-color: #ffd43b; }
+        
+        .lane-0 { 
+            border-color: #ff6b6b;
+            background: linear-gradient(to bottom, rgba(255, 107, 107, 0.1) 0%, rgba(255, 107, 107, 0.2) 100%);
+        }
+        .lane-1 { 
+            border-color: #51cf66;
+            background: linear-gradient(to bottom, rgba(81, 207, 102, 0.1) 0%, rgba(81, 207, 102, 0.2) 100%);
+        }
+        .lane-2 { 
+            border-color: #339af0;
+            background: linear-gradient(to bottom, rgba(51, 154, 240, 0.1) 0%, rgba(51, 154, 240, 0.2) 100%);
+        }
+        .lane-3 { 
+            border-color: #ffd43b;
+            background: linear-gradient(to bottom, rgba(255, 212, 59, 0.1) 0%, rgba(255, 212, 59, 0.2) 100%);
+        }
         .key-label {
             position: absolute;
-            bottom: 10px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 24px;
+            font-size: 32px;
             font-weight: bold;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
+        
+        .lane-0 .key-label { border-color: #ff6b6b; color: #ff6b6b; }
+        .lane-1 .key-label { border-color: #51cf66; color: #51cf66; }
+        .lane-2 .key-label { border-color: #339af0; color: #339af0; }
+        .lane-3 .key-label { border-color: #ffd43b; color: #ffd43b; }
         .note {
-            width: 70px;
-            height: 20px;
-            background: #ff6b6b;
-            border-radius: 5px;
+            width: 85px;
+            height: 25px;
+            border-radius: 8px;
             position: absolute;
-            left: 5px;
+            left: 50%;
+            transform: translateX(-50%);
             animation: fall 2s linear;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.6);
         }
+        
         @keyframes fall {
-            from { top: 0; }
-            to { top: 400px; }
+            from { top: -30px; }
+            to { top: 600px; }
         }
+        /* 컨트롤 버튼들 */
         .controls {
-            margin: 20px 0;
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 100;
         }
+        
         button {
-            padding: 10px 20px;
-            margin: 0 10px;
+            padding: 12px 25px;
             font-size: 16px;
+            font-weight: bold;
             border: none;
-            border-radius: 5px;
+            border-radius: 25px;
             cursor: pointer;
-            background: #4CAF50;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
             color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
+        
         button:hover {
-            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+            background: linear-gradient(45deg, #45a049, #4CAF50);
         }
-        .score {
-            font-size: 24px;
-            margin: 20px 0;
+        
+        button:active {
+            transform: translateY(0);
         }
+        
+        /* 상태 정보 (숨김) */
         .status {
-            margin: 20px 0;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 5px;
+            display: none;
+        }
+        
+        /* 오디오 컨트롤 숨김 */
+        #gameAudio {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎵 Rhythm Game</h1>
-        
-        <div class="status">
-            <div>Status: <span id="status">Ready</span></div>
-            <div>Beatmap: <span id="beatmap-info">Not loaded</span></div>
+    <div class="game-container">
+        <!-- 상단 UI -->
+        <div class="top-ui">
+            <!-- 왼쪽: 체력 바 -->
+            <div class="health-bar">
+                <div class="health-label">HP</div>
+                <div class="hearts">
+                    <div class="heart"></div>
+                    <div class="heart"></div>
+                    <div class="heart"></div>
+                    <div class="heart"></div>
+                    <div class="heart"></div>
+                </div>
+            </div>
+            
+            <!-- 오른쪽: 점수 -->
+            <div class="score-area">
+                <div class="score-value" id="score">0</div>
+                <div class="score-label">SCORE</div>
+            </div>
         </div>
         
-        <div class="score">
-            Score: <span id="score">0</span> | Combo: <span id="combo">0</span>
+        <!-- 노래 정보 (점수 밑) -->
+        <div class="song-info">
+            <div class="song-title" id="song-title">빌려온고양이</div>
         </div>
         
-        <div class="controls">
-            <button onclick="loadBeatmap()">Load Test Beatmap</button>
-            <button onclick="startGame()">Start Game</button>
-            <button onclick="resetGame()">Reset</button>
+        <!-- 콤보 영역 (오른쪽 가운데) -->
+        <div class="combo-area">
+            <div class="combo-value" id="combo">0</div>
+            <div class="combo-label">COMBO</div>
         </div>
         
-        <audio id="gameAudio" controls style="margin: 10px 0;">
-            <source src="빌려온고양이.mp3" type="audio/mpeg">
-            음악 파일을 찾을 수 없습니다.
-        </audio>
-        
+        <!-- 게임 영역 -->
         <div class="game-area">
             <div class="lanes">
                 <div class="lane lane-0">
@@ -132,8 +358,21 @@
             </div>
         </div>
         
+        <!-- 컨트롤 버튼들 -->
+        <div class="controls">
+            <button onclick="loadBeatmap()">Load Beatmap</button>
+            <button onclick="startGame()">Start Game</button>
+            <button onclick="resetGame()">Reset</button>
+        </div>
+        
+        <!-- 숨겨진 요소들 -->
+        <audio id="gameAudio">
+            <source src="빌려온고양이.mp3" type="audio/mpeg">
+        </audio>
+        
         <div class="status">
-            <p>Press A, S, K, L keys to hit the notes!</p>
+            <div>Status: <span id="status">Ready</span></div>
+            <div>Beatmap: <span id="beatmap-info">Not loaded</span></div>
         </div>
     </div>
 
