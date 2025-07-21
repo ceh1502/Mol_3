@@ -60,6 +60,7 @@ services:
       - ./ai-service:/app
       - ai_models:/app/models
       - ./audio_json:/tmp/audio_json
+      - ./audio_mp3:/tmp/audio_mp3
     command: uvicorn src.main:app --host 0.0.0.0 --reload --app-dir /app
 
   # PostgreSQL 데이터베이스 (선택사항)
