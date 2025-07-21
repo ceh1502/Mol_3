@@ -5,271 +5,386 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rhythm Game</title>
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            color: white;
-            overflow-x: hidden;
-            height: 100vh;
-        }
-        .game-container {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* 상단 UI 영역 */
-        .top-ui {
-            position: absolute;
-            top: 20px;
-            width: 100%;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            padding: 0 40px;
             box-sizing: border-box;
         }
-        
-        /* 체력 바 (왼쪽 위) */
-        .health-bar {
-            display: flex;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 15px 20px;
-            border-radius: 15px;
-            border: 2px solid #ff6b6b;
-            box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 25%, #f8b500 50%, #40e0d0 75%, #ee5a52 100%);
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
         }
-        
-        .health-label {
-            font-size: 16px;
-            font-weight: bold;
-            margin-right: 15px;
-            color: #ff6b6b;
-        }
-        
-        .hearts {
-            display: flex;
-            gap: 5px;
-        }
-        
-        .heart {
-            width: 25px;
-            height: 25px;
-            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-            position: relative;
-            transform: rotate(-45deg);
-            animation: heartbeat 1.5s ease-in-out infinite;
-        }
-        
-        .heart::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: -50%;
-            width: 25px;
-            height: 40px;
-            background: inherit;
-            border-radius: 50px 50px 0 0;
-            transform: translateX(-50%) rotate(-45deg);
-            transform-origin: 0 100%;
-        }
-        
-        .heart::after {
-            content: '';
-            position: absolute;
+
+        .game-container {
+            position: fixed;
+            top: 0;
             left: 0;
-            top: -50%;
-            width: 25px;
-            height: 40px;
-            background: inherit;
-            border-radius: 50px 50px 0 0;
-            transform: rotate(45deg);
-            transform-origin: 100% 100%;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
         }
-        
-        @keyframes heartbeat {
-            0%, 100% { transform: rotate(-45deg) scale(1); }
-            50% { transform: rotate(-45deg) scale(1.1); }
-        }
-        
-        /* 점수 영역 (오른쪽 위) */
-        .score-area {
-            background: rgba(0, 0, 0, 0.6);
-            padding: 15px 25px;
+
+        /* 상단 UI - 체력바 */
+        .health-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(90deg, #333 0%, #666 100%);
+            border: 3px solid #888;
             border-radius: 15px;
-            border: 2px solid #4ecdc4;
-            box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
-            text-align: right;
+            padding: 8px;
+            z-index: 200;
         }
-        
-        .score-value {
-            font-size: 32px;
+
+        .health-label {
+            color: #ff4444;
+            font-size: 12px;
             font-weight: bold;
-            color: #4ecdc4;
-            text-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+            text-transform: uppercase;
+            margin-bottom: 5px;
         }
-        
+
+        .health-bar {
+            width: 200px;
+            height: 20px;
+            background: linear-gradient(90deg, #ff0000 0%, #ffff00 50%, #00ff00 100%);
+            border-radius: 10px;
+            border: 2px solid #fff;
+            position: relative;
+        }
+
+        /* 상단 UI - 점수 */
+        .score-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #333 0%, #555 100%);
+            border: 3px solid #4ecdc4;
+            border-radius: 15px;
+            padding: 15px 25px;
+            text-align: right;
+            z-index: 200;
+        }
+
         .score-label {
-            font-size: 14px;
             color: #4ecdc4;
-            margin-top: 5px;
+            font-size: 14px;
+            font-weight: bold;
         }
-        /* 노래 제목 영역 (점수 밑) */
+
+        .score-value {
+            color: #4ecdc4;
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(78, 205, 196, 0.8);
+        }
+
+        /* 노래 정보 */
         .song-info {
             position: absolute;
-            top: 100px;
-            right: 40px;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 10px 20px;
+            top: 90px;
+            right: 20px;
+            background: linear-gradient(135deg, #333 0%, #555 100%);
+            border: 2px solid #ffd93d;
             border-radius: 10px;
-            border: 1px solid #ffd93d;
-            box-shadow: 0 0 15px rgba(255, 217, 61, 0.2);
-            z-index: 100;
+            padding: 8px 15px;
+            z-index: 200;
         }
-        
+
         .song-title {
-            font-size: 18px;
-            font-weight: bold;
             color: #ffd93d;
-            text-shadow: 0 0 8px rgba(255, 217, 61, 0.4);
+            font-size: 16px;
+            font-weight: bold;
         }
-        
-        /* 콤보 영역 (오른쪽 가운데) */
-        .combo-area {
+
+        /* 콤보 */
+        .combo-container {
             position: absolute;
-            right: 40px;
+            right: 20px;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.7);
-            padding: 20px;
-            border-radius: 20px;
+            background: linear-gradient(135deg, #333 0%, #555 100%);
             border: 3px solid #a55eea;
-            box-shadow: 0 0 25px rgba(165, 94, 234, 0.4);
-            text-align: center;
-            z-index: 100;
-        }
-        
-        .combo-value {
-            font-size: 48px;
-            font-weight: bold;
-            color: #a55eea;
-            text-shadow: 0 0 15px rgba(165, 94, 234, 0.6);
-            animation: comboGlow 2s ease-in-out infinite;
-        }
-        
-        .combo-label {
-            font-size: 16px;
-            color: #a55eea;
-            margin-top: 5px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        
-        @keyframes comboGlow {
-            0%, 100% { text-shadow: 0 0 15px rgba(165, 94, 234, 0.6); }
-            50% { text-shadow: 0 0 25px rgba(165, 94, 234, 0.9), 0 0 35px rgba(165, 94, 234, 0.6); }
-        }
-        
-        /* 게임 영역 */
-        .game-area {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-        .lanes {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            height: 600px;
-            position: relative;
-        }
-        
-        .lane {
-            width: 100px;
-            height: 100%;
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.15) 100%);
-            border: 3px solid;
             border-radius: 15px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
+            padding: 15px;
+            text-align: center;
+            z-index: 200;
         }
-        
-        .lane-0 { 
-            border-color: #ff6b6b;
-            background: linear-gradient(to bottom, rgba(255, 107, 107, 0.1) 0%, rgba(255, 107, 107, 0.2) 100%);
-        }
-        .lane-1 { 
-            border-color: #51cf66;
-            background: linear-gradient(to bottom, rgba(81, 207, 102, 0.1) 0%, rgba(81, 207, 102, 0.2) 100%);
-        }
-        .lane-2 { 
-            border-color: #339af0;
-            background: linear-gradient(to bottom, rgba(51, 154, 240, 0.1) 0%, rgba(51, 154, 240, 0.2) 100%);
-        }
-        .lane-3 { 
-            border-color: #ffd43b;
-            background: linear-gradient(to bottom, rgba(255, 212, 59, 0.1) 0%, rgba(255, 212, 59, 0.2) 100%);
-        }
-        .key-label {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 32px;
+
+        .combo-label {
+            color: #a55eea;
+            font-size: 14px;
             font-weight: bold;
-            background: rgba(0, 0, 0, 0.8);
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
-        
-        .lane-0 .key-label { border-color: #ff6b6b; color: #ff6b6b; }
-        .lane-1 .key-label { border-color: #51cf66; color: #51cf66; }
-        .lane-2 .key-label { border-color: #339af0; color: #339af0; }
-        .lane-3 .key-label { border-color: #ffd43b; color: #ffd43b; }
+
+        .combo-value {
+            color: #a55eea;
+            font-size: 36px;
+            font-weight: bold;
+            text-shadow: 0 0 15px rgba(165, 94, 234, 0.8);
+        }
+
+        /* 메인 게임 영역 - 화면 전체를 터널로 */
+        .tunnel-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            perspective: 800px;
+            perspective-origin: center 20%;
+            transform-style: preserve-3d;
+            z-index: 1;
+        }
+
+        /* 터널 바닥 - 화면 전체를 덮도록 */
+        .tunnel-floor {
+            position: absolute;
+            top: -100vh;
+            left: 50%;
+            transform: translateX(-50%) rotateX(45deg);
+            width: 100vw;
+            height: 400vh;
+            background: #000;
+            transform-style: preserve-3d;
+            z-index: 2;
+        }
+
+        /* 4개 레인 - 자연스러운 원근법 */
+        .lane {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            transform-style: preserve-3d;
+            border-left: 4px solid;
+            border-right: 4px solid;
+            /* 위쪽이 약간 좁아지는 자연스러운 원근법 */
+            clip-path: polygon(15% 0%, 85% 0%, 90% 100%, 10% 100%);
+        }
+
+        .lane-0 {
+            left: 0;
+            width: 25%;
+            background: linear-gradient(to bottom, 
+                rgba(255, 107, 181, 0.2) 0%, 
+                rgba(255, 107, 181, 0.4) 30%,
+                rgba(255, 107, 181, 0.6) 70%,
+                rgba(255, 107, 181, 0.9) 100%);
+            border-color: #ff6bb5;
+            box-shadow: 
+                inset 0 0 50px rgba(255, 107, 181, 0.3),
+                0 0 20px rgba(255, 107, 181, 0.4);
+        }
+
+        .lane-1 {
+            left: 25%;
+            width: 25%;
+            background: linear-gradient(to bottom, 
+                rgba(64, 224, 208, 0.2) 0%, 
+                rgba(64, 224, 208, 0.4) 30%,
+                rgba(64, 224, 208, 0.6) 70%,
+                rgba(64, 224, 208, 0.9) 100%);
+            border-color: #40e0d0;
+            box-shadow: 
+                inset 0 0 50px rgba(64, 224, 208, 0.3),
+                0 0 20px rgba(64, 224, 208, 0.4);
+        }
+
+        .lane-2 {
+            left: 50%;
+            width: 25%;
+            background: linear-gradient(to bottom, 
+                rgba(64, 224, 208, 0.2) 0%, 
+                rgba(64, 224, 208, 0.4) 30%,
+                rgba(64, 224, 208, 0.6) 70%,
+                rgba(64, 224, 208, 0.9) 100%);
+            border-color: #40e0d0;
+            box-shadow: 
+                inset 0 0 50px rgba(64, 224, 208, 0.3),
+                0 0 20px rgba(64, 224, 208, 0.4);
+        }
+
+        .lane-3 {
+            left: 75%;
+            width: 25%;
+            background: linear-gradient(to bottom, 
+                rgba(248, 181, 0, 0.2) 0%, 
+                rgba(248, 181, 0, 0.4) 30%,
+                rgba(248, 181, 0, 0.6) 70%,
+                rgba(248, 181, 0, 0.9) 100%);
+            border-color: #f8b500;
+            box-shadow: 
+                inset 0 0 50px rgba(248, 181, 0, 0.3),
+                0 0 20px rgba(248, 181, 0, 0.4);
+        }
+
+        /* 하단 타원형 타겟 - 화면 기준으로 배치 */
+        .target-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100vw;
+            height: 200px;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .hit-target {
+            position: absolute;
+            bottom: 50px;
+            width: 120px;
+            height: 40px;
+            border-radius: 50%;
+            border: 4px solid;
+            background: radial-gradient(ellipse, 
+                rgba(255, 255, 255, 0.6) 0%, 
+                rgba(255, 255, 255, 0.3) 50%, 
+                rgba(255, 255, 255, 0.1) 80%,
+                transparent 100%);
+            box-shadow: 
+                0 0 30px rgba(255, 255, 255, 0.6),
+                inset 0 2px 10px rgba(255, 255, 255, 0.4),
+                inset 0 -2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease;
+            transform: translateX(-50%);
+        }
+
+        .hit-target-0 {
+            left: 12.5%;
+            border-color: #ff6bb5;
+            background: radial-gradient(ellipse, 
+                rgba(255, 107, 181, 0.8) 0%, 
+                rgba(255, 107, 181, 0.4) 50%, 
+                rgba(255, 107, 181, 0.2) 80%,
+                transparent 100%);
+            box-shadow: 
+                0 0 40px rgba(255, 107, 181, 0.8),
+                inset 0 2px 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .hit-target-1 {
+            left: 37.5%;
+            border-color: #40e0d0;
+            background: radial-gradient(ellipse, 
+                rgba(64, 224, 208, 0.8) 0%, 
+                rgba(64, 224, 208, 0.4) 50%, 
+                rgba(64, 224, 208, 0.2) 80%,
+                transparent 100%);
+            box-shadow: 
+                0 0 40px rgba(64, 224, 208, 0.8),
+                inset 0 2px 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .hit-target-2 {
+            left: 62.5%;
+            border-color: #40e0d0;
+            background: radial-gradient(ellipse, 
+                rgba(64, 224, 208, 0.8) 0%, 
+                rgba(64, 224, 208, 0.4) 50%, 
+                rgba(64, 224, 208, 0.2) 80%,
+                transparent 100%);
+            box-shadow: 
+                0 0 40px rgba(64, 224, 208, 0.8),
+                inset 0 2px 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .hit-target-3 {
+            left: 87.5%;
+            border-color: #f8b500;
+            background: radial-gradient(ellipse, 
+                rgba(248, 181, 0, 0.8) 0%, 
+                rgba(248, 181, 0, 0.4) 50%, 
+                rgba(248, 181, 0, 0.2) 80%,
+                transparent 100%);
+            box-shadow: 
+                0 0 40px rgba(248, 181, 0, 0.8),
+                inset 0 2px 10px rgba(255, 255, 255, 0.5);
+        }
+
+        /* 키 입력 시 활성화 효과 - 약하게 조정 */
+        .hit-target.active {
+            transform: translateX(-50%) scale(1.15);
+            filter: brightness(1.3) saturate(1.2);
+        }
+
+        .hit-target-0.active {
+            box-shadow: 
+                0 0 30px #ff6bb5,
+                0 0 50px rgba(255, 107, 181, 0.5),
+                inset 0 0 15px rgba(255, 255, 255, 0.6);
+        }
+
+        .hit-target-1.active {
+            box-shadow: 
+                0 0 30px #40e0d0,
+                0 0 50px rgba(64, 224, 208, 0.5),
+                inset 0 0 15px rgba(255, 255, 255, 0.6);
+        }
+
+        .hit-target-2.active {
+            box-shadow: 
+                0 0 30px #40e0d0,
+                0 0 50px rgba(64, 224, 208, 0.5),
+                inset 0 0 15px rgba(255, 255, 255, 0.6);
+        }
+
+        .hit-target-3.active {
+            box-shadow: 
+                0 0 30px #f8b500,
+                0 0 50px rgba(248, 181, 0, 0.5),
+                inset 0 0 15px rgba(255, 255, 255, 0.6);
+        }
+
+        /* 노트 */
         .note {
-            width: 85px;
-            height: 25px;
-            border-radius: 8px;
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            animation: fall 2s linear;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
-            border: 2px solid rgba(255, 255, 255, 0.6);
+            width: 60px;
+            height: 20px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            background: linear-gradient(145deg, 
+                rgba(255, 255, 255, 0.9), 
+                rgba(200, 200, 200, 0.7));
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+            z-index: 40;
         }
-        
-        @keyframes fall {
-            from { top: -30px; }
-            to { top: 600px; }
+
+        /* 노트 애니메이션 */
+        @keyframes notefall {
+            0% {
+                top: -10%;
+                transform: translateX(-50%) scale(0.3);
+                opacity: 0.5;
+            }
+            100% {
+                top: 100%;
+                transform: translateX(-50%) scale(1);
+                opacity: 1;
+            }
         }
-        /* 컨트롤 버튼들 */
+
+        .note {
+            animation: notefall 3s linear;
+        }
+
+        /* 컨트롤 버튼 */
         .controls {
-            position: absolute;
+            position: fixed;
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
             gap: 15px;
-            z-index: 100;
+            z-index: 300;
         }
-        
+
         button {
             padding: 12px 25px;
             font-size: 16px;
@@ -281,95 +396,89 @@
             color: white;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
-        
+
         button:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
-            background: linear-gradient(45deg, #45a049, #4CAF50);
         }
-        
-        button:active {
-            transform: translateY(0);
-        }
-        
-        /* 상태 정보 (숨김) */
+
+        /* 숨김 요소 */
         .status {
             display: none;
         }
-        
-        /* 오디오 컨트롤 숨김 */
+
         #gameAudio {
             display: none;
+        }
+
+        /* 파장 효과 애니메이션 - 약하게 */
+        @keyframes rippleEffect {
+            0% {
+                width: 15px;
+                height: 15px;
+                opacity: 1;
+            }
+            100% {
+                width: 100px;
+                height: 100px;
+                opacity: 0;
+            }
         }
     </style>
 </head>
 <body>
     <div class="game-container">
         <!-- 상단 UI -->
-        <div class="top-ui">
-            <!-- 왼쪽: 체력 바 -->
-            <div class="health-bar">
-                <div class="health-label">HP</div>
-                <div class="hearts">
-                    <div class="heart"></div>
-                    <div class="heart"></div>
-                    <div class="heart"></div>
-                    <div class="heart"></div>
-                    <div class="heart"></div>
-                </div>
-            </div>
-            
-            <!-- 오른쪽: 점수 -->
-            <div class="score-area">
-                <div class="score-value" id="score">0</div>
-                <div class="score-label">SCORE</div>
-            </div>
+        <div class="health-container">
+            <div class="health-label">HP</div>
+            <div class="health-bar"></div>
         </div>
-        
-        <!-- 노래 정보 (점수 밑) -->
+
+        <div class="score-container">
+            <div class="score-label">SCORE</div>
+            <div class="score-value" id="score">0</div>
+        </div>
+
         <div class="song-info">
             <div class="song-title" id="song-title">빌려온고양이</div>
         </div>
-        
-        <!-- 콤보 영역 (오른쪽 가운데) -->
-        <div class="combo-area">
-            <div class="combo-value" id="combo">0</div>
+
+        <div class="combo-container">
             <div class="combo-label">COMBO</div>
+            <div class="combo-value" id="combo">0</div>
         </div>
-        
-        <!-- 게임 영역 -->
-        <div class="game-area">
-            <div class="lanes">
-                <div class="lane lane-0">
-                    <div class="key-label">A</div>
-                </div>
-                <div class="lane lane-1">
-                    <div class="key-label">S</div>
-                </div>
-                <div class="lane lane-2">
-                    <div class="key-label">K</div>
-                </div>
-                <div class="lane lane-3">
-                    <div class="key-label">L</div>
-                </div>
+
+        <!-- 3D 터널 게임 영역 -->
+        <div class="tunnel-container">
+            <div class="tunnel-floor">
+                <div class="lane lane-0"></div>
+                <div class="lane lane-1"></div>
+                <div class="lane lane-2"></div>
+                <div class="lane lane-3"></div>
             </div>
         </div>
-        
+
+        <!-- 하단 타겟 영역 -->
+        <div class="target-container">
+            <div class="hit-target hit-target-0"></div>
+            <div class="hit-target hit-target-1"></div>
+            <div class="hit-target hit-target-2"></div>
+            <div class="hit-target hit-target-3"></div>
+        </div>
+
         <!-- 컨트롤 버튼들 -->
         <div class="controls">
             <button onclick="loadBeatmap()">Load Beatmap</button>
             <button onclick="startGame()">Start Game</button>
             <button onclick="resetGame()">Reset</button>
         </div>
-        
+
         <!-- 숨겨진 요소들 -->
         <audio id="gameAudio">
             <source src="빌려온고양이.mp3" type="audio/mpeg">
         </audio>
-        
+
         <div class="status">
             <div>Status: <span id="status">Ready</span></div>
             <div>Beatmap: <span id="beatmap-info">Not loaded</span></div>
@@ -418,6 +527,10 @@
             
             gameStarted = true;
             startTime = Date.now();
+            score = 0;
+            combo = 0;
+            document.getElementById('score').textContent = '0';
+            document.getElementById('combo').textContent = '0';
             document.getElementById('status').textContent = 'Playing...';
             
             // 음악 재생
@@ -439,16 +552,27 @@
             const laneElement = document.querySelector(`.lane-${lane}`);
             const note = document.createElement('div');
             note.className = 'note';
-            note.style.backgroundColor = type === 'strong' ? '#ff4757' : '#5352ed';
+            
+            // 노트 색상 설정
+            const colors = {
+                0: type === 'strong' ? '#ff4757' : '#ff6bb5',
+                1: type === 'strong' ? '#2ed573' : '#40e0d0', 
+                2: type === 'strong' ? '#1e90ff' : '#40e0d0',
+                3: type === 'strong' ? '#ffa502' : '#f8b500'
+            };
+            
+            note.style.background = `linear-gradient(145deg, ${colors[lane]}, rgba(255,255,255,0.3))`;
+            note.style.border = `2px solid ${colors[lane]}`;
+            note.style.boxShadow = `0 0 20px ${colors[lane]}80`;
             
             laneElement.appendChild(note);
             
-            // 2초 후 노트 제거
+            // 3초 후 노트 제거
             setTimeout(() => {
                 if (note.parentNode) {
                     note.parentNode.removeChild(note);
                 }
-            }, 2000);
+            }, 3000);
         }
 
         function resetGame() {
@@ -466,14 +590,14 @@
             
             // 모든 노트 제거
             document.querySelectorAll('.note').forEach(note => {
-                note.parentNode.removeChild(note);
+                if (note.parentNode) {
+                    note.parentNode.removeChild(note);
+                }
             });
         }
 
         // 키보드 입력 처리
         document.addEventListener('keydown', (event) => {
-            if (!gameStarted) return;
-            
             let lane = -1;
             switch (event.key.toLowerCase()) {
                 case 'a': lane = 0; break;
@@ -483,21 +607,48 @@
                 default: return;
             }
             
-            // 레인 빛나는 효과
+            // 타겟 바 활성화 효과
+            const hitTarget = document.querySelector(`.hit-target-${lane}`);
             const laneElement = document.querySelector(`.lane-${lane}`);
-            laneElement.style.boxShadow = '0 0 20px rgba(255, 255, 255, 0.8)';
-            laneElement.style.transform = 'scale(1.05)';
+            
+            hitTarget.classList.add('active');
+            
+            // 레인 전체에도 효과 추가 - 약하게
+            laneElement.style.filter = 'brightness(1.2) saturate(1.1)';
+            laneElement.style.transform = 'scale(1.02)';
+            
+            // 파장 효과 생성 - 약하게
+            const ripple = document.createElement('div');
+            ripple.style.cssText = `
+                position: absolute;
+                bottom: 50px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+                background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, transparent 70%);
+                animation: rippleEffect 0.5s ease-out;
+                pointer-events: none;
+                z-index: 200;
+            `;
+            
+            hitTarget.appendChild(ripple);
             
             setTimeout(() => {
-                laneElement.style.boxShadow = '';
+                hitTarget.classList.remove('active');
+                laneElement.style.filter = '';
                 laneElement.style.transform = '';
-            }, 150);
+                if (ripple.parentNode) ripple.parentNode.removeChild(ripple);
+            }, 200);
             
-            // 점수 증가
-            score += 10;
-            combo += 1;
-            document.getElementById('score').textContent = score;
-            document.getElementById('combo').textContent = combo;
+            // 게임이 시작된 경우에만 점수 증가
+            if (gameStarted) {
+                score += 10;
+                combo += 1;
+                document.getElementById('score').textContent = score.toLocaleString();
+                document.getElementById('combo').textContent = combo;
+            }
         });
 
         // 페이지 로드 시 상태 확인
