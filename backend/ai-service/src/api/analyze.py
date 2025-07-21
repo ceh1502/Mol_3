@@ -18,7 +18,9 @@ logger = logging.getLogger(__name__)
 
 SAVE_DIR = "/tmp/audio_json"
 NUM_LANES = 4
-TARGET_DENSITY = 3.0    # 초당 최대 이벤트
+TARGET_DENSITY = 2.5    # 초당 최대 이벤트
+WINDOW_SEC = 2.5
+MAX_FACTOR = 2.0
 BEAT_TOL = 0.05         # strong 판정용 비트 근접 오차(초)
 SNAP_TOL = 0.04         # 그리드 스냅 오차(초)
 CLOSE_EVENT_THR = 0.02 # 너무 가까운 이벤트 병합(초)
@@ -129,6 +131,26 @@ def prune_density(times, song_dur, target_density=TARGET_DENSITY):
     idx = np.linspace(0, len(times) - 1, num=limit, dtype=int)
     return times[idx]
 
+def adaptive_prune_density(times, onset_env, time_axis,
+                           target_density, window_sec=WINDOW_SEC,
+                           max_factor=MAX_FACTOR):
+    win_edges  = np.arange(0, time_axis[-1] + window_sec, window_sec)
+    center_e   = np.interp((win_edges[:-1] + win_edges[1:]) / 2,
+                           time_axis, onset_env)
+    energy_norm = (center_e - center_e.min()) / (center_e.ptp() + 1e-8)
+    local_fac   = 1 + energy_norm * (max_factor - 1)
+
+    pruned = []
+    for i in range(len(win_edges) - 1):
+        lo, hi    = win_edges[i], win_edges[i+1]
+        w_times   = times[(times >= lo) & (times < hi)]
+        limit     = int(window_sec * target_density * local_fac[i])
+        if len(w_times) > limit:
+            idx  = np.linspace(0, len(w_times) - 1, num=limit, dtype=int)
+            w_times = w_times[idx]
+        pruned.append(w_times)
+    return np.concatenate(pruned) if pruned else times
+
 # --------------------------------------------------------------- #
 # 6. 메인 비트맵
 def make_beatmap(y, sr, num_lanes: int = NUM_LANES):
@@ -145,8 +167,11 @@ def make_beatmap(y, sr, num_lanes: int = NUM_LANES):
 
     snapped     = snap_to_grid(all_times, beat_times, bpm)
     snapped     = merge_close(np.sort(snapped))          # 병합 thr 0.02 초
-    song_dur    = len(y) / sr
-    final_times = prune_density(snapped, song_dur)
+    # song_dur    = len(y) / sr
+    # final_times = prune_density(snapped, song_dur)
+    final_times = adaptive_prune_density(snapped, onset_env,
+                                         librosa.frames_to_time(np.arange(len(onset_env)), sr=sr),
+                                         TARGET_DENSITY, WINDOW_SEC, MAX_FACTOR)
 
     # ---------- Spectral Centroid (lane 후보 값) ----------
     centroid        = librosa.feature.spectral_centroid(y=views["full"], sr=sr).flatten()
@@ -183,7 +208,8 @@ def make_beatmap(y, sr, num_lanes: int = NUM_LANES):
         else:
             c_val   = np.interp(t, frame_times, centroid_norm,
                                 left=centroid_norm[0], right=centroid_norm[-1])
-            bucket  = int(np.clip(np.floor(c_val * 4), 0, 3))   # 0~3
+            c_sqrt_val = np.sqrt(c_val)  # 0~1 → 0~1 범위로 조정
+            bucket  = int(np.clip(np.floor(c_sqrt_val * 4), 0, 3))   # 0~3
             lane    = bucket_to_lane(bucket, rr_idx[bucket])
             rr_idx[bucket] += 1                 # 라운드로빈 진행
 
