@@ -1,0 +1,55 @@
+.game-area {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  color: white;
+  font-family: 'Arial', sans-serif;
+}
+
+.game-field {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  margin-top: 20px;
+  height: 600px;
+  position: relative;
+}
+
+.game-controls {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.game-controls button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  background: #4CAF50;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.game-controls button:hover {
+  background: #45a049;
+}
+
+.game-controls button:last-child {
+  background: #f44336;
+}
+
+.game-controls button:last-child:hover {
+  background: #da190b;
+}
+
+.instructions {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 18px;
+  opacity: 0.8;
+}

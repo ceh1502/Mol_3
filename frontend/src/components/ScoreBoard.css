@@ -1,0 +1,86 @@
+.scoreboard {
+  width: 100%;
+  max-width: 500px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+}
+
+.score-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.score, .combo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.score .label, .combo .label {
+  font-size: 14px;
+  opacity: 0.8;
+  margin-bottom: 5px;
+}
+
+.score .value, .combo .value {
+  font-size: 24px;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.score .value {
+  color: #ffd43b;
+}
+
+.combo .value {
+  color: #51cf66;
+}
+
+.judgment {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 32px;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  animation: judgmentAnimation 1s ease-out;
+  pointer-events: none;
+}
+
+.judgment-perfect {
+  color: #FFD700;
+}
+
+.judgment-great {
+  color: #00FF00;
+}
+
+.judgment-good {
+  color: #00BFFF;
+}
+
+.judgment-miss {
+  color: #FF0000;
+}
+
+@keyframes judgmentAnimation {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0;
+  }
+  20% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}

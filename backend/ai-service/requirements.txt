@@ -1,0 +1,57 @@
+# FastAPI
+fastapi==0.103.1
+uvicorn[standard]==0.23.2
+python-multipart==0.0.6
+pydantic==2.3.0
+
+# ML (GPU 있으면 CUDA 휠 선택, 없으면 cpuonly)
+torch==2.2.2
+torchvision==0.17.2
+torchaudio==2.2.2
+transformers==4.33.2
+accelerate==0.22.0
+
+# ──────────▼  신호 처리  ▼──────────
+numpy==1.26.4                 # librosa 0.11·madmom 호환 :contentReference[oaicite:0]{index=0}
+scipy==1.13.0
+cython==3.0.10                # madmom 컴파일 필수 :contentReference[oaicite:1]{index=1}
+mido==1.3.2                   # madmom MIDI 의존 :contentReference[oaicite:2]{index=2}
+soundfile==0.12.1
+librosa==0.11.0               # 4-key 맵 구현에 필요, numpy 1.26 지원 :contentReference[oaicite:3]{index=3}               # RNN Beat → DBN 연동 :contentReference[oaicite:4]{index=4}
+pyfftw==0.14.0                # FFT 가속(optional) :contentReference[oaicite:5]{index=5}
+matplotlib==3.8.4
+git+https://github.com/CPJKU/madmom.git@main
+
+
+# 유튜브 다운로드
+yt-dlp==2024.4.9
+ffmpeg-python==0.2.0
+
+# DB / Cache
+redis==4.6.0
+sqlalchemy==2.0.20
+asyncpg==0.28.0
+
+# 유틸
+python-dotenv==1.0.1
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+aiofiles==23.2.1
+
+# 모니터링
+prometheus-client==0.17.1
+structlog==23.1.0
+
+# 과학 계산
+pandas==2.2.2
+scikit-learn==1.5.0
+
+# 개발 도구
+pytest==7.4.4
+pytest-asyncio==0.23.5
+black==24.4.0
+isort==5.13.2
+flake8==7.0.0
+
+# pip-tools (잠금 파일 생성용)
+pip-tools==7.4.1

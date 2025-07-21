@@ -1,0 +1,143 @@
+# Docker Compose 설정 파일
+# 로컬 개발 환경에서 전체 시스템을 구동하기 위한 설정
+version: "3.8"
+
+services:
+  # Redis 캐시 및 큐 서비스
+  redis:
+    image: redis:7-alpine
+    container_name: rhythm-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - rhythm-network
+
+  # Node.js API Gateway
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: rhythm-api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - AI_SERVICE_URL=http://ai-service:8000
+      - PORT=3000
+    depends_on:
+      - redis
+    networks:
+      - rhythm-network
+    volumes:
+      - ./api-gateway:/app
+      - /app/node_modules
+    command: npm run dev
+
+  # Python AI Service
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile.gpu
+    container_name: rhythm-ai-service
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app/src
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CUDA_VISIBLE_DEVICES=0
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - redis
+    networks:
+      - rhythm-network
+    volumes:
+      - ./ai-service:/app
+      - ai_models:/app/models
+      - ./audio_json:/tmp/audio_json
+      - ./audio_mp3:/tmp/audio_mp3
+    command: uvicorn src.main:app --host 0.0.0.0 --reload --app-dir /app
+
+  # PostgreSQL 데이터베이스 (선택사항)
+  postgres:
+    image: postgres:15-alpine
+    container_name: rhythm-postgres
+    environment:
+      - POSTGRES_DB=rhythm_game
+      - POSTGRES_USER=rhythm_user
+      - POSTGRES_PASSWORD=rhythm_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - rhythm-network
+
+  # Nginx 리버스 프록시 (프로덕션용)
+  nginx:
+    image: nginx:alpine
+    container_name: rhythm-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - api-gateway
+    networks:
+      - rhythm-network
+    profiles:
+      - production
+
+  # 모니터링 - Prometheus (선택사항)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: rhythm-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - rhythm-network
+    profiles:
+      - monitoring
+
+  # 모니터링 - Grafana (선택사항)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: rhythm-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - rhythm-network
+    profiles:
+      - monitoring
+
+networks:
+  rhythm-network:
+    driver: bridge
+
+volumes:
+  redis_data:
+    driver: local
+  postgres_data:
+    driver: local
+  ai_models:
+    driver: local
+  temp_audio:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
