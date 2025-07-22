@@ -262,10 +262,10 @@
       /* 공통 타겟 바 스타일 */
       .hit-target {
         position: absolute;
-        bottom: 80px;
+        bottom: 60px;
         width: 15%;
-        height: 25px;
-        border-radius: 12px;
+        height: 60px;
+        border-radius: 20px;
         border: 3px solid;
         background: linear-gradient(
           135deg,
@@ -372,8 +372,8 @@
         left: 50%;
         transform: translateX(-50%);
         width: 80%;
-        height: 25px;
-        border-radius: 12px;
+        height: 40px;
+        border-radius: 20px;
         border: 2px solid rgba(255, 255, 255, 0.9);
         background: linear-gradient(
           145deg,
@@ -778,14 +778,14 @@
         // 모든 노트 생성
         beatmap.events.forEach((event, index) => {
           setTimeout(() => {
-            createNote(event.lane, event.type);
+            createNote(event.lane, event.type, event.time);
           }, event.time * 1000);
         });
 
         console.log(`Game started! ${beatmap.events.length} notes scheduled.`);
       }
 
-      function createNote(lane, type) {
+      function createNote(lane, type, eventTime) {
         const laneElement = document.querySelector(`.lane-${lane}`);
         const note = document.createElement("div");
         note.className = "note";
@@ -810,8 +810,9 @@
 
         laneElement.appendChild(note);
         
-        // activeNotes에 추가 (타겟 바 도달 시점 계산: 3초 * 0.85 ≈ 2.55초)
-        const hitTime = Date.now() + 2550;
+        // activeNotes에 추가 (게임 시작 시간 기준으로 정확한 히트 타이밍 계산)
+        // 노트 애니메이션이 3초이고, 타겟바 도달은 85% 지점 (2.55초)
+        const hitTime = startTime + (eventTime * 1000) + 2550;
         activeNotes.set(noteId, {
           element: note,
           lane: lane,
@@ -910,9 +911,11 @@
       function calculateJudgment(timeDiff) {
         const absTimeDiff = Math.abs(timeDiff);
         
-        if (absTimeDiff <= 100) return 'PERFECT';
-        else if (absTimeDiff <= 150) return 'GREAT';
-        else if (absTimeDiff <= 200) return 'GOOD';
+        // 타겟바 컨테이너 높이 60px의 두 배 길이(120px)를 기준으로 판정
+        // 시간 기반으로 후하게 설정
+        if (absTimeDiff <= 200) return 'PERFECT';  // 200ms 이내 PERFECT
+        else if (absTimeDiff <= 350) return 'GREAT';   // 350ms 이내 GREAT
+        else if (absTimeDiff <= 500) return 'GOOD';   // 500ms 이내 GOOD (매우 후한 판정)
         else return 'BAD';
       }
 
@@ -981,7 +984,7 @@
         for (let [noteId, noteData] of activeNotes) {
           if (noteData.lane === lane && !noteData.missed) {
             const timeDiff = Math.abs(currentTime - noteData.hitTime);
-            if (timeDiff < bestTimeDiff && timeDiff <= 250) { // 250ms 이내만 유효
+            if (timeDiff < bestTimeDiff && timeDiff <= 600) { // 600ms 이내만 유효 (매우 후한 설정)
               bestTimeDiff = timeDiff;
               bestNote = { id: noteId, data: noteData, timeDiff: currentTime - noteData.hitTime };
             }
