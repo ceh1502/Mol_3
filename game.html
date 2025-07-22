@@ -764,6 +764,7 @@
 
         gameStarted = true;
         startTime = Date.now();
+        console.log(`[DEBUG] 게임 시작 시간: ${new Date(startTime).toLocaleTimeString()}.${startTime % 1000}`);
         score = 0;
         combo = 0;
         document.getElementById("score").textContent = "0";
@@ -819,6 +820,8 @@
           hitTime: hitTime,
           missed: false
         });
+        
+        console.log(`[DEBUG] 노트 생성: Lane ${lane}, EventTime: ${eventTime}s, HitTime: ${new Date(hitTime).toLocaleTimeString()}.${hitTime % 1000}`);
 
         // 3초 후 노트 제거 (놓친 노트 처리)
         setTimeout(() => {
@@ -912,10 +915,10 @@
         const absTimeDiff = Math.abs(timeDiff);
         
         // 타겟바 컨테이너 높이 60px의 두 배 길이(120px)를 기준으로 판정
-        // 시간 기반으로 후하게 설정
-        if (absTimeDiff <= 200) return 'PERFECT';  // 200ms 이내 PERFECT
-        else if (absTimeDiff <= 350) return 'GREAT';   // 350ms 이내 GREAT
-        else if (absTimeDiff <= 500) return 'GOOD';   // 500ms 이내 GOOD (매우 후한 판정)
+        // 시간 기반으로 극도로 후하게 설정
+        if (absTimeDiff <= 400) return 'PERFECT';  // 400ms 이내 PERFECT
+        else if (absTimeDiff <= 800) return 'GREAT';   // 800ms 이내 GREAT
+        else if (absTimeDiff <= 1200) return 'GOOD';   // 1200ms 이내 GOOD (극도로 후한 판정)
         else return 'BAD';
       }
 
@@ -981,15 +984,25 @@
         let bestTimeDiff = Infinity;
 
         // 해당 레인의 가장 가까운 노트 찾기
+        let laneNotes = [];
         for (let [noteId, noteData] of activeNotes) {
           if (noteData.lane === lane && !noteData.missed) {
             const timeDiff = Math.abs(currentTime - noteData.hitTime);
-            if (timeDiff < bestTimeDiff && timeDiff <= 600) { // 600ms 이내만 유효 (매우 후한 설정)
+            laneNotes.push({ id: noteId, timeDiff, hitTime: noteData.hitTime, rawTimeDiff: currentTime - noteData.hitTime });
+            
+            if (timeDiff < bestTimeDiff && timeDiff <= 2000) { // 2000ms 이내만 유효 (극도로 후한 설정)
               bestTimeDiff = timeDiff;
               bestNote = { id: noteId, data: noteData, timeDiff: currentTime - noteData.hitTime };
             }
           }
         }
+        
+        console.log(`[DEBUG] Lane ${lane} 노트들:`, laneNotes.map(n => ({ 
+          timeDiff: n.timeDiff + 'ms', 
+          rawDiff: n.rawTimeDiff + 'ms',
+          hitTime: new Date(n.hitTime).toLocaleTimeString() + '.' + (n.hitTime % 1000)
+        })));
+        console.log(`[DEBUG] 선택된 노트:`, bestNote ? { timeDiff: bestNote.timeDiff + 'ms' } : 'None');
 
         if (bestNote) {
           const judgment = calculateJudgment(bestNote.timeDiff);
@@ -1014,11 +1027,14 @@
           updateUI();
 
           // 노트 제거
+          console.log(`[DEBUG] 노트 제거 시도: ${bestNote.id}, 판정: ${judgment}`);
           bestNote.data.missed = true;
           if (bestNote.data.element.parentNode) {
             bestNote.data.element.parentNode.removeChild(bestNote.data.element);
+            console.log(`[DEBUG] 노트 DOM에서 제거됨: ${bestNote.id}`);
           }
           activeNotes.delete(bestNote.id);
+          console.log(`[DEBUG] activeNotes에서 제거됨. 남은 노트: ${activeNotes.size}`);
 
           return true;
         }
@@ -1028,6 +1044,8 @@
 
       // 키보드 입력 처리
       document.addEventListener("keydown", (event) => {
+        console.log(`[DEBUG] 키 감지: ${event.key}, gameStarted: ${gameStarted}`);
+        
         let lane = -1;
         switch (event.key.toLowerCase()) {
           case "a":
@@ -1043,8 +1061,11 @@
             lane = 3;
             break;
           default:
+            console.log(`[DEBUG] 무시된 키: ${event.key}`);
             return;
         }
+        
+        console.log(`[DEBUG] 매핑된 레인: ${lane}`);
 
         // 타겟 바 활성화 효과
         const hitTarget = document.querySelector(`.hit-target-${lane}`);
@@ -1065,7 +1086,11 @@
 
         // 게임이 시작된 경우 노트 판정 처리
         if (gameStarted) {
-          handleNoteHit(lane);
+          console.log(`[DEBUG] 키 입력: Lane ${lane}, CurrentTime: ${new Date().toLocaleTimeString()}.${Date.now() % 1000}, ActiveNotes: ${activeNotes.size}`);
+          const hitResult = handleNoteHit(lane);
+          console.log(`[DEBUG] handleNoteHit 결과: ${hitResult}`);
+        } else {
+          console.log(`[DEBUG] 게임이 시작되지 않았음: gameStarted = ${gameStarted}`);
         }
       });
 
