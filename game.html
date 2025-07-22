@@ -13,13 +13,96 @@
 
       body {
         font-family: "Arial", sans-serif;
-        background: #1a1a1a;
+        background: #000;
         color: white;
         overflow: hidden;
         height: 100vh;
         width: 100vw;
         margin: 0;
         padding: 0;
+        position: relative;
+      }
+
+      /* 우주 배경 */
+      .space-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+        z-index: -1000;
+      }
+
+      /* 별 애니메이션 */
+      .stars {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+
+      .stars::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+          radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+          radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+          radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+          radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
+          radial-gradient(2px 2px at 160px 30px, #ddd, transparent);
+        background-repeat: repeat;
+        background-size: 200px 100px;
+        animation: sparkle 20s linear infinite;
+      }
+
+      .stars::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+          radial-gradient(1px 1px at 50px 50px, #fff, transparent),
+          radial-gradient(1px 1px at 100px 150px, rgba(255,255,255,0.7), transparent),
+          radial-gradient(2px 2px at 200px 100px, #eee, transparent);
+        background-repeat: repeat;
+        background-size: 300px 200px;
+        animation: sparkle 30s linear infinite reverse;
+      }
+
+      @keyframes sparkle {
+        0% {
+          transform: translateY(0px);
+        }
+        100% {
+          transform: translateY(-100px);
+        }
+      }
+
+      /* 성운 효과 */
+      .nebula {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: 
+          radial-gradient(circle at 20% 80%, rgba(120,119,198,0.3) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(255,119,198,0.15) 0%, transparent 50%),
+          radial-gradient(circle at 40% 40%, rgba(200,200,255,0.2) 0%, transparent 50%);
+        animation: nebulaFloat 40s ease-in-out infinite alternate;
+      }
+
+      @keyframes nebulaFloat {
+        0% {
+          transform: translateX(-10px) translateY(-5px) scale(1);
+        }
+        100% {
+          transform: translateX(10px) translateY(5px) scale(1.05);
+        }
       }
 
       /* 랜딩 페이지 스타일 */
@@ -868,6 +951,12 @@
     </style>
   </head>
   <body>
+    <!-- 우주 배경 -->
+    <div class="space-background">
+      <div class="stars"></div>
+      <div class="nebula"></div>
+    </div>
+
     <!-- 랜딩 페이지 -->
     <div class="landing-page" id="landing-page">
       <div class="landing-title">🎵 Rhythm Game</div>
