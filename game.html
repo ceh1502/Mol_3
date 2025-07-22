@@ -29,7 +29,12 @@
         left: 0;
         width: 100vw;
         height: 100vh;
-        background: linear-gradient(135deg, #2c3e50 0%, #3498db 50%, #9b59b6 100%);
+        background: linear-gradient(
+          135deg,
+          #2c3e50 0%,
+          #3498db 50%,
+          #9b59b6 100%
+        );
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -143,8 +148,12 @@
       }
 
       @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
       }
 
       .game-container {
@@ -415,8 +424,9 @@
 
       /* 각 레인별 위치와 3D 변형 적용 - 레인 중앙에 정확히 배치 */
       .hit-target-0 {
-        left: 15.0%;
-        transform: perspective(600px) rotateY(8deg) rotateX(-45deg) translateX(-50%);
+        left: 15%;
+        transform: perspective(600px) rotateY(8deg) rotateX(-45deg)
+          translateX(-50%);
         border-color: #ff6bb5;
         background: linear-gradient(
           135deg,
@@ -430,7 +440,8 @@
 
       .hit-target-1 {
         left: 38.5%;
-        transform: perspective(600px) rotateY(3deg) rotateX(-45deg) translateX(-50%);
+        transform: perspective(600px) rotateY(3deg) rotateX(-45deg)
+          translateX(-50%);
         border-color: #40e0d0;
         background: linear-gradient(
           135deg,
@@ -444,7 +455,8 @@
 
       .hit-target-2 {
         left: 61.5%;
-        transform: perspective(600px) rotateY(-3deg) rotateX(-45deg) translateX(-50%);
+        transform: perspective(600px) rotateY(-3deg) rotateX(-45deg)
+          translateX(-50%);
         border-color: #40e0d0;
         background: linear-gradient(
           135deg,
@@ -457,8 +469,9 @@
       }
 
       .hit-target-3 {
-        left: 85.0%;
-        transform: perspective(600px) rotateY(-8deg) rotateX(-45deg) translateX(-50%);
+        left: 85%;
+        transform: perspective(600px) rotateY(-8deg) rotateX(-45deg)
+          translateX(-50%);
         border-color: #f8b500;
         background: linear-gradient(
           135deg,
@@ -472,28 +485,32 @@
 
       /* 키 입력 시 활성화 효과 - 3D 변형 유지 */
       .hit-target-0.active {
-        transform: perspective(600px) rotateY(8deg) rotateX(-45deg) translateX(-50%) scale(1.15);
+        transform: perspective(600px) rotateY(8deg) rotateX(-45deg)
+          translateX(-50%) scale(1.15);
         filter: brightness(1.3) saturate(1.2);
         box-shadow: 0 0 40px #ff6bb5, 0 0 60px rgba(255, 107, 181, 0.6),
           inset 0 0 20px rgba(255, 255, 255, 0.7);
       }
 
       .hit-target-1.active {
-        transform: perspective(600px) rotateY(3deg) rotateX(-45deg) translateX(-50%) scale(1.15);
+        transform: perspective(600px) rotateY(3deg) rotateX(-45deg)
+          translateX(-50%) scale(1.15);
         filter: brightness(1.3) saturate(1.2);
         box-shadow: 0 0 40px #40e0d0, 0 0 60px rgba(64, 224, 208, 0.6),
           inset 0 0 20px rgba(255, 255, 255, 0.7);
       }
 
       .hit-target-2.active {
-        transform: perspective(600px) rotateY(-3deg) rotateX(-45deg) translateX(-50%) scale(1.15);
+        transform: perspective(600px) rotateY(-3deg) rotateX(-45deg)
+          translateX(-50%) scale(1.15);
         filter: brightness(1.3) saturate(1.2);
         box-shadow: 0 0 40px #40e0d0, 0 0 60px rgba(64, 224, 208, 0.6),
           inset 0 0 20px rgba(255, 255, 255, 0.7);
       }
 
       .hit-target-3.active {
-        transform: perspective(600px) rotateY(-8deg) rotateX(-45deg) translateX(-50%) scale(1.15);
+        transform: perspective(600px) rotateY(-8deg) rotateX(-45deg)
+          translateX(-50%) scale(1.15);
         filter: brightness(1.3) saturate(1.2);
         box-shadow: 0 0 40px #f8b500, 0 0 60px rgba(248, 181, 0, 0.6),
           inset 0 0 20px rgba(255, 255, 255, 0.7);
@@ -748,25 +765,33 @@
 
       .combo-red {
         border-color: #ff4757 !important;
-        box-shadow: 0 0 30px rgba(255, 71, 87, 1.0) !important;
+        box-shadow: 0 0 30px rgba(255, 71, 87, 1) !important;
         animation: comboGlow 0.5s ease-in-out;
       }
 
       .combo-rainbow {
         border: 3px solid;
-        border-image: linear-gradient(45deg, #ff6b9d, #4ecdc4, #ffd93d, #ff6b9d) 1;
-        box-shadow: 0 0 35px rgba(255, 255, 255, 1.0) !important;
+        border-image: linear-gradient(45deg, #ff6b9d, #4ecdc4, #ffd93d, #ff6b9d)
+          1;
+        box-shadow: 0 0 35px rgba(255, 255, 255, 1) !important;
         animation: rainbowPulse 1s ease-in-out infinite;
       }
 
       @keyframes comboGlow {
-        0% { transform: translateY(-50%) scale(1); }
-        50% { transform: translateY(-50%) scale(1.1); }
-        100% { transform: translateY(-50%) scale(1); }
+        0% {
+          transform: translateY(-50%) scale(1);
+        }
+        50% {
+          transform: translateY(-50%) scale(1.1);
+        }
+        100% {
+          transform: translateY(-50%) scale(1);
+        }
       }
 
       @keyframes rainbowPulse {
-        0%, 100% {
+        0%,
+        100% {
           transform: translateY(-50%) scale(1);
           filter: hue-rotate(0deg) brightness(1);
         }
@@ -781,21 +806,27 @@
     <!-- 랜딩 페이지 -->
     <div class="landing-page" id="landing-page">
       <div class="landing-title">🎵 Rhythm Game</div>
-      <div class="landing-subtitle">YouTube 음악으로 리듬게임을 즐겨보세요!</div>
-      
+      <div class="landing-subtitle">
+        YouTube 음악으로 리듬게임을 즐겨보세요!
+      </div>
+
       <div class="url-input-container">
-        <input 
-          type="text" 
-          class="url-input" 
-          id="youtube-url" 
+        <input
+          type="text"
+          class="url-input"
+          id="youtube-url"
           placeholder="https://www.youtube.com/watch?v=example"
           autocomplete="off"
         />
-        <button class="start-button" id="start-game-button" onclick="processYouTubeURL()">
+        <button
+          class="start-button"
+          id="start-game-button"
+          onclick="processYouTubeURL()"
+        >
           게임 시작
         </button>
       </div>
-      
+
       <div class="loading-container" id="loading-container">
         <div class="loading-spinner"></div>
         <div class="loading-text" id="loading-text">음원을 처리하는 중...</div>
@@ -869,11 +900,14 @@
         <div class="game-over-score">
           Final Score: <span id="final-score">0</span>
         </div>
-        <button class="game-over-button" onclick="restartGame()">Restart Game</button>
+        <button class="game-over-button" onclick="restartGame()">
+          Restart Game
+        </button>
       </div>
     </div>
 
     <script>
+      const API_URL = "/process-youtube";
       let beatmap = null;
       let gameStarted = false;
       let notes = [];
@@ -883,32 +917,64 @@
       let health = 100;
       let activeNotes = new Map(); // 활성화된 노트들을 추적
 
-      async function loadBeatmap() {
-        try {
-          document.getElementById("status").textContent = "Loading...";
-          const response = await fetch(
-            "http://localhost:8001/5ba220a0-5cfb-412e-a84c-6dc3a0b41d0e.json"
-          );
-
-          if (!response.ok) {
-            throw new Error("Failed to load beatmap");
-          }
-
-          beatmap = await response.json();
-          document.getElementById("beatmap-info").textContent = `${
-            beatmap.events.length
-          } events, BPM: ${beatmap.tempo.toFixed(1)}`;
-          document.getElementById("status").textContent = "Beatmap loaded!";
-
-          console.log("Loaded beatmap:", beatmap);
-        } catch (error) {
-          console.error("Error loading beatmap:", error);
-          document.getElementById("status").textContent =
-            "Error loading beatmap";
-          document.getElementById("beatmap-info").textContent = error.message;
-        }
+      async function loadBeatmapFromURL(url) {
+        // [MOD] 매개변수로 URL 받도록 변경
+        document.getElementById("status").textContent = "Loading...";
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Failed to load beatmap");
+        beatmap = await res.json();
+        document.getElementById(
+          "beatmap-info"
+        ).textContent = `${beatmap.events.length} events`;
+        document.getElementById("status").textContent = "Beatmap loaded!";
       }
 
+      async function processYouTubeURL() {
+        // [MOD] 전체 재작성
+        const url = document.getElementById("youtube-url").value.trim();
+        if (!isValidYouTubeURL(url)) {
+          alert("올바른 YouTube URL을 입력해주세요!");
+          return;
+        }
+
+        // 로딩 UI
+        const loader = document.getElementById("loading-container");
+        loader.style.display = "flex";
+        document.getElementById("loading-text").textContent = "음원 변환 중...";
+
+        try {
+          /* 1) 8001 → 8000 프록시 POST */
+          const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url }),
+          });
+          if (!res.ok) throw new Error("Backend error");
+          const { mp3_url, beatmap_url, title } = await res.json(); // [MOD]
+
+          /* 2) 오디오 태그 src 설정 */
+          const audio = document.getElementById("gameAudio");
+          audio.src = mp3_url; // [MOD]
+
+          /* 3) 비트맵 로드 */
+          document.getElementById("loading-text").textContent =
+            "비트맵 로드 중...";
+          await loadBeatmapFromURL(beatmap_url); // [MOD]
+
+          /* 4) 제목 표시 + 게임 화면 전환 */
+          document.getElementById("song-title").textContent =
+            title ?? "Unknown"; // [MOD]
+          switchToGameScreen();
+
+          /* 5) 1초 뒤 게임 시작 */
+          setTimeout(startGame, 1000);
+        } catch (err) {
+          console.error(err);
+          alert(err.message || "처리 중 오류 발생!");
+        } finally {
+          loader.style.display = "none";
+        }
+      }
 
       function startGame() {
         if (!beatmap) {
@@ -923,7 +989,11 @@
 
         gameStarted = true;
         startTime = Date.now();
-        console.log(`[DEBUG] 게임 시작 시간: ${new Date(startTime).toLocaleTimeString()}.${startTime % 1000}`);
+        console.log(
+          `[DEBUG] 게임 시작 시간: ${new Date(
+            startTime
+          ).toLocaleTimeString()}.${startTime % 1000}`
+        );
         score = 0;
         combo = 0;
         document.getElementById("score").textContent = "0";
@@ -969,18 +1039,22 @@
         note.style.boxShadow = `0 0 20px ${colors[lane]}80`;
 
         laneElement.appendChild(note);
-        
+
         // activeNotes에 추가 (게임 시작 시간 기준으로 정확한 히트 타이밍 계산)
         // 노트 애니메이션이 3초이고, 타겟바 도달 시점 조정 (2.8초로 늦춤)
-        const hitTime = startTime + (eventTime * 1000) + 2800;
+        const hitTime = startTime + eventTime * 1000 + 2800;
         activeNotes.set(noteId, {
           element: note,
           lane: lane,
           hitTime: hitTime,
-          missed: false
+          missed: false,
         });
-        
-        console.log(`[DEBUG] 노트 생성: Lane ${lane}, EventTime: ${eventTime}s, HitTime: ${new Date(hitTime).toLocaleTimeString()}.${hitTime % 1000}`);
+
+        console.log(
+          `[DEBUG] 노트 생성: Lane ${lane}, EventTime: ${eventTime}s, HitTime: ${new Date(
+            hitTime
+          ).toLocaleTimeString()}.${hitTime % 1000}`
+        );
 
         // 3초 후 노트 제거 (놓친 노트 처리)
         setTimeout(() => {
@@ -988,7 +1062,7 @@
             // 놓친 노트 - BAD 처리
             const noteData = activeNotes.get(noteId);
             if (!noteData.missed) {
-              showJudgment('BAD');
+              showJudgment("BAD");
               updateHealth(-5); // 체력 5% 감소
               combo = 0;
               updateUI();
@@ -1041,7 +1115,7 @@
       function updateHealth(change) {
         health = Math.max(0, Math.min(100, health + change));
         document.getElementById("health-fill").style.width = `${health}%`;
-        
+
         if (health <= 0) {
           gameOver();
         }
@@ -1049,9 +1123,10 @@
 
       function gameOver() {
         gameStarted = false;
-        document.getElementById("final-score").textContent = score.toLocaleString();
+        document.getElementById("final-score").textContent =
+          score.toLocaleString();
         document.getElementById("game-over-modal").style.display = "flex";
-        
+
         // 음악 중지
         const audio = document.getElementById("gameAudio");
         audio.pause();
@@ -1062,7 +1137,7 @@
         judgment.className = `judgment ${type.toLowerCase()}`;
         judgment.textContent = type.toUpperCase();
         document.body.appendChild(judgment);
-        
+
         setTimeout(() => {
           if (judgment.parentNode) {
             judgment.parentNode.removeChild(judgment);
@@ -1072,23 +1147,30 @@
 
       function calculateJudgment(timeDiff) {
         const absTimeDiff = Math.abs(timeDiff);
-        
-        console.log(`[DEBUG] 판정 계산: rawTimeDiff=${timeDiff}ms, absTimeDiff=${absTimeDiff}ms`);
-        
+
+        console.log(
+          `[DEBUG] 판정 계산: rawTimeDiff=${timeDiff}ms, absTimeDiff=${absTimeDiff}ms`
+        );
+
         // 정상적인 리듬게임 판정 (타겟바 두 배 길이 개념)
-        if (absTimeDiff <= 100) return 'PERFECT';  // 100ms 이내 PERFECT
-        else if (absTimeDiff <= 200) return 'GREAT';   // 200ms 이내 GREAT  
-        else if (absTimeDiff <= 300) return 'GOOD';    // 300ms 이내 GOOD
-        else return 'BAD';
+        if (absTimeDiff <= 100) return "PERFECT"; // 100ms 이내 PERFECT
+        else if (absTimeDiff <= 200) return "GREAT"; // 200ms 이내 GREAT
+        else if (absTimeDiff <= 300) return "GOOD"; // 300ms 이내 GOOD
+        else return "BAD";
       }
 
       function getScoreForJudgment(judgment) {
         switch (judgment) {
-          case 'PERFECT': return 100;
-          case 'GREAT': return 80;
-          case 'GOOD': return 60;
-          case 'BAD': return 0;
-          default: return 0;
+          case "PERFECT":
+            return 100;
+          case "GREAT":
+            return 80;
+          case "GOOD":
+            return 60;
+          case "BAD":
+            return 0;
+          default:
+            return 0;
         }
       }
 
@@ -1106,7 +1188,7 @@
           bonusElement.className = "combo-bonus";
           bonusElement.innerHTML = `+${bonus} <span class="bonus-label">COMBO BONUS!</span>`;
           document.body.appendChild(bonusElement);
-          
+
           setTimeout(() => {
             if (bonusElement.parentNode) {
               bonusElement.parentNode.removeChild(bonusElement);
@@ -1116,20 +1198,20 @@
       }
 
       function updateComboEffects() {
-        const comboContainer = document.querySelector('.combo-container');
-        const comboValue = document.getElementById('combo');
-        
+        const comboContainer = document.querySelector(".combo-container");
+        const comboValue = document.getElementById("combo");
+
         // 기존 효과 제거
-        comboContainer.className = 'combo-container';
-        
+        comboContainer.className = "combo-container";
+
         if (combo >= 100) {
-          comboContainer.classList.add('combo-rainbow');
+          comboContainer.classList.add("combo-rainbow");
         } else if (combo >= 50) {
-          comboContainer.classList.add('combo-red');
+          comboContainer.classList.add("combo-red");
         } else if (combo >= 30) {
-          comboContainer.classList.add('combo-orange');
+          comboContainer.classList.add("combo-orange");
         } else if (combo >= 10) {
-          comboContainer.classList.add('combo-yellow');
+          comboContainer.classList.add("combo-yellow");
         }
       }
 
@@ -1148,32 +1230,51 @@
         for (let [noteId, noteData] of activeNotes) {
           if (noteData.lane === lane && !noteData.missed) {
             const timeDiff = Math.abs(currentTime - noteData.hitTime);
-            laneNotes.push({ id: noteId, timeDiff, hitTime: noteData.hitTime, rawTimeDiff: currentTime - noteData.hitTime });
-            
-            if (timeDiff < bestTimeDiff && timeDiff <= 400) { // 400ms 이내만 유효 (적당히 후한 설정)
+            laneNotes.push({
+              id: noteId,
+              timeDiff,
+              hitTime: noteData.hitTime,
+              rawTimeDiff: currentTime - noteData.hitTime,
+            });
+
+            if (timeDiff < bestTimeDiff && timeDiff <= 400) {
+              // 400ms 이내만 유효 (적당히 후한 설정)
               bestTimeDiff = timeDiff;
-              bestNote = { id: noteId, data: noteData, timeDiff: currentTime - noteData.hitTime };
+              bestNote = {
+                id: noteId,
+                data: noteData,
+                timeDiff: currentTime - noteData.hitTime,
+              };
             }
           }
         }
-        
-        console.log(`[DEBUG] Lane ${lane} 노트들:`, laneNotes.map(n => ({ 
-          timeDiff: n.timeDiff + 'ms', 
-          rawDiff: n.rawTimeDiff + 'ms',
-          hitTime: new Date(n.hitTime).toLocaleTimeString() + '.' + (n.hitTime % 1000)
-        })));
-        console.log(`[DEBUG] 선택된 노트:`, bestNote ? { timeDiff: bestNote.timeDiff + 'ms' } : 'None');
+
+        console.log(
+          `[DEBUG] Lane ${lane} 노트들:`,
+          laneNotes.map((n) => ({
+            timeDiff: n.timeDiff + "ms",
+            rawDiff: n.rawTimeDiff + "ms",
+            hitTime:
+              new Date(n.hitTime).toLocaleTimeString() +
+              "." +
+              (n.hitTime % 1000),
+          }))
+        );
+        console.log(
+          `[DEBUG] 선택된 노트:`,
+          bestNote ? { timeDiff: bestNote.timeDiff + "ms" } : "None"
+        );
 
         if (bestNote) {
           const judgment = calculateJudgment(bestNote.timeDiff);
           const baseScore = getScoreForJudgment(judgment);
-          
-          if (judgment !== 'BAD') {
+
+          if (judgment !== "BAD") {
             combo += 1;
             const comboBonus = getComboBonus(combo);
             const totalScore = baseScore + comboBonus;
             score += totalScore;
-            
+
             showComboBonus(baseScore, comboBonus, totalScore);
             updateComboEffects();
           } else {
@@ -1182,30 +1283,36 @@
             updateHealth(-5); // BAD일 때 체력 감소
             updateComboEffects();
           }
-          
+
           showJudgment(judgment);
           updateUI();
 
           // 노트 제거
-          console.log(`[DEBUG] 노트 제거 시도: ${bestNote.id}, 판정: ${judgment}`);
+          console.log(
+            `[DEBUG] 노트 제거 시도: ${bestNote.id}, 판정: ${judgment}`
+          );
           bestNote.data.missed = true;
           if (bestNote.data.element.parentNode) {
             bestNote.data.element.parentNode.removeChild(bestNote.data.element);
             console.log(`[DEBUG] 노트 DOM에서 제거됨: ${bestNote.id}`);
           }
           activeNotes.delete(bestNote.id);
-          console.log(`[DEBUG] activeNotes에서 제거됨. 남은 노트: ${activeNotes.size}`);
+          console.log(
+            `[DEBUG] activeNotes에서 제거됨. 남은 노트: ${activeNotes.size}`
+          );
 
           return true;
         }
-        
+
         return false;
       }
 
       // 키보드 입력 처리
       document.addEventListener("keydown", (event) => {
-        console.log(`[DEBUG] 키 감지: ${event.key}, gameStarted: ${gameStarted}`);
-        
+        console.log(
+          `[DEBUG] 키 감지: ${event.key}, gameStarted: ${gameStarted}`
+        );
+
         let lane = -1;
         switch (event.key.toLowerCase()) {
           case "a":
@@ -1224,7 +1331,7 @@
             console.log(`[DEBUG] 무시된 키: ${event.key}`);
             return;
         }
-        
+
         console.log(`[DEBUG] 매핑된 레인: ${lane}`);
 
         // 타겟 바 활성화 효과
@@ -1237,7 +1344,6 @@
         laneElement.style.filter = "brightness(1.2) saturate(1.1)";
         laneElement.style.transform = "scale(1.02)";
 
-
         setTimeout(() => {
           hitTarget.classList.remove("active");
           laneElement.style.filter = "";
@@ -1246,59 +1352,37 @@
 
         // 게임이 시작된 경우 노트 판정 처리
         if (gameStarted) {
-          console.log(`[DEBUG] 키 입력: Lane ${lane}, CurrentTime: ${new Date().toLocaleTimeString()}.${Date.now() % 1000}, ActiveNotes: ${activeNotes.size}`);
+          console.log(
+            `[DEBUG] 키 입력: Lane ${lane}, CurrentTime: ${new Date().toLocaleTimeString()}.${
+              Date.now() % 1000
+            }, ActiveNotes: ${activeNotes.size}`
+          );
           const hitResult = handleNoteHit(lane);
           console.log(`[DEBUG] handleNoteHit 결과: ${hitResult}`);
         } else {
-          console.log(`[DEBUG] 게임이 시작되지 않았음: gameStarted = ${gameStarted}`);
+          console.log(
+            `[DEBUG] 게임이 시작되지 않았음: gameStarted = ${gameStarted}`
+          );
         }
       });
 
       // 랜딩 페이지 관련 함수들
       function isValidYouTubeURL(url) {
-        const youtubeRegex = /^https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]+/;
+        const youtubeRegex =
+          /^https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]+/;
         return youtubeRegex.test(url);
       }
 
-
       function switchToGameScreen() {
-        document.getElementById('landing-page').classList.add('hidden');
-        document.getElementById('game-container').classList.add('active');
-      }
-
-      async function processYouTubeURL() {
-        const urlInput = document.getElementById('youtube-url');
-        const url = urlInput.value.trim();
-        
-        // URL 유효성 검사
-        if (!url) {
-          alert('YouTube URL을 입력해주세요!');
-          return;
-        }
-        
-        if (!isValidYouTubeURL(url)) {
-          alert('올바른 YouTube URL을 입력해주세요!');
-          return;
-        }
-        
-        // 백엔드에서 처리할 예정이므로 일단 알림만
-        console.log('🎵 입력된 YouTube URL:', url);
-        alert(`URL이 입력되었습니다!\n${url}\n\n백엔드에서 처리할 예정입니다.`);
-        
-        // 임시로 기존 게임으로 넘어가기
-        switchToGameScreen();
-        loadBeatmap().then(() => {
-          setTimeout(() => {
-            startGame();
-          }, 1000);
-        });
+        document.getElementById("landing-page").classList.add("hidden");
+        document.getElementById("game-container").classList.add("active");
       }
 
       // Enter 키로도 시작 가능하게
-      document.addEventListener('DOMContentLoaded', () => {
-        const urlInput = document.getElementById('youtube-url');
-        urlInput.addEventListener('keypress', (e) => {
-          if (e.key === 'Enter') {
+      document.addEventListener("DOMContentLoaded", () => {
+        const urlInput = document.getElementById("youtube-url");
+        urlInput.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") {
             processYouTubeURL();
           }
         });
