@@ -13,18 +13,138 @@
 
       body {
         font-family: "Arial", sans-serif;
-        background: linear-gradient(
-          135deg,
-          #ff6b9d 0%,
-          #c44569 25%,
-          #f8b500 50%,
-          #40e0d0 75%,
-          #ee5a52 100%
-        );
+        background: #1a1a1a;
         color: white;
         overflow: hidden;
         height: 100vh;
         width: 100vw;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* 랜딩 페이지 스타일 */
+      .landing-page {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: linear-gradient(135deg, #2c3e50 0%, #3498db 50%, #9b59b6 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+
+      .landing-page.hidden {
+        display: none;
+      }
+
+      .landing-title {
+        font-size: 4rem;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 2rem;
+        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        background: linear-gradient(45deg, #ff6b9d, #4ecdc4, #ffd93d);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .landing-subtitle {
+        font-size: 1.2rem;
+        text-align: center;
+        margin-bottom: 3rem;
+        opacity: 0.8;
+      }
+
+      .url-input-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .url-input {
+        width: 500px;
+        padding: 1rem 1.5rem;
+        font-size: 1.1rem;
+        border: 3px solid #4ecdc4;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+      }
+
+      .url-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      .url-input:focus {
+        outline: none;
+        border-color: #ff6b9d;
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 0 20px rgba(255, 107, 157, 0.3);
+        transform: scale(1.02);
+      }
+
+      .start-button {
+        padding: 1rem 3rem;
+        font-size: 1.3rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        background: linear-gradient(45deg, #ff6b9d, #4ecdc4);
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 20px rgba(255, 107, 157, 0.3);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .start-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(255, 107, 157, 0.4);
+        background: linear-gradient(45deg, #4ecdc4, #ff6b9d);
+      }
+
+      .start-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .loading-container {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+
+      .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid #4ecdc4;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      .loading-text {
+        font-size: 1.1rem;
+        opacity: 0.8;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
       }
 
       .game-container {
@@ -34,6 +154,19 @@
         width: 100vw;
         height: 100vh;
         overflow: hidden;
+        background: linear-gradient(
+          135deg,
+          #ff6b9d 0%,
+          #c44569 25%,
+          #f8b500 50%,
+          #40e0d0 75%,
+          #ee5a52 100%
+        );
+        display: none;
+      }
+
+      .game-container.active {
+        display: block;
       }
 
       /* 상단 UI - 체력바 */
@@ -645,7 +778,32 @@
     </style>
   </head>
   <body>
-    <div class="game-container">
+    <!-- 랜딩 페이지 -->
+    <div class="landing-page" id="landing-page">
+      <div class="landing-title">🎵 Rhythm Game</div>
+      <div class="landing-subtitle">YouTube 음악으로 리듬게임을 즐겨보세요!</div>
+      
+      <div class="url-input-container">
+        <input 
+          type="text" 
+          class="url-input" 
+          id="youtube-url" 
+          placeholder="https://www.youtube.com/watch?v=example"
+          autocomplete="off"
+        />
+        <button class="start-button" id="start-game-button" onclick="processYouTubeURL()">
+          게임 시작
+        </button>
+      </div>
+      
+      <div class="loading-container" id="loading-container">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loading-text">음원을 처리하는 중...</div>
+      </div>
+    </div>
+
+    <!-- 게임 화면 -->
+    <div class="game-container" id="game-container">
       <!-- 상단 UI -->
       <div class="health-container">
         <div class="health-label">HP</div>
@@ -750,6 +908,7 @@
           document.getElementById("beatmap-info").textContent = error.message;
         }
       }
+
 
       function startGame() {
         if (!beatmap) {
@@ -1093,6 +1252,56 @@
         } else {
           console.log(`[DEBUG] 게임이 시작되지 않았음: gameStarted = ${gameStarted}`);
         }
+      });
+
+      // 랜딩 페이지 관련 함수들
+      function isValidYouTubeURL(url) {
+        const youtubeRegex = /^https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]+/;
+        return youtubeRegex.test(url);
+      }
+
+
+      function switchToGameScreen() {
+        document.getElementById('landing-page').classList.add('hidden');
+        document.getElementById('game-container').classList.add('active');
+      }
+
+      async function processYouTubeURL() {
+        const urlInput = document.getElementById('youtube-url');
+        const url = urlInput.value.trim();
+        
+        // URL 유효성 검사
+        if (!url) {
+          alert('YouTube URL을 입력해주세요!');
+          return;
+        }
+        
+        if (!isValidYouTubeURL(url)) {
+          alert('올바른 YouTube URL을 입력해주세요!');
+          return;
+        }
+        
+        // 백엔드에서 처리할 예정이므로 일단 알림만
+        console.log('🎵 입력된 YouTube URL:', url);
+        alert(`URL이 입력되었습니다!\n${url}\n\n백엔드에서 처리할 예정입니다.`);
+        
+        // 임시로 기존 게임으로 넘어가기
+        switchToGameScreen();
+        loadBeatmap().then(() => {
+          setTimeout(() => {
+            startGame();
+          }, 1000);
+        });
+      }
+
+      // Enter 키로도 시작 가능하게
+      document.addEventListener('DOMContentLoaded', () => {
+        const urlInput = document.getElementById('youtube-url');
+        urlInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            processYouTubeURL();
+          }
+        });
       });
 
       // 페이지 로드 시 상태 확인
