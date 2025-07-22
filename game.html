@@ -812,8 +812,8 @@
         laneElement.appendChild(note);
         
         // activeNotes에 추가 (게임 시작 시간 기준으로 정확한 히트 타이밍 계산)
-        // 노트 애니메이션이 3초이고, 타겟바 도달은 85% 지점 (2.55초)
-        const hitTime = startTime + (eventTime * 1000) + 2550;
+        // 노트 애니메이션이 3초이고, 타겟바 도달 시점 조정 (2.8초로 늦춤)
+        const hitTime = startTime + (eventTime * 1000) + 2800;
         activeNotes.set(noteId, {
           element: note,
           lane: lane,
@@ -914,11 +914,12 @@
       function calculateJudgment(timeDiff) {
         const absTimeDiff = Math.abs(timeDiff);
         
-        // 타겟바 컨테이너 높이 60px의 두 배 길이(120px)를 기준으로 판정
-        // 시간 기반으로 극도로 후하게 설정
-        if (absTimeDiff <= 400) return 'PERFECT';  // 400ms 이내 PERFECT
-        else if (absTimeDiff <= 800) return 'GREAT';   // 800ms 이내 GREAT
-        else if (absTimeDiff <= 1200) return 'GOOD';   // 1200ms 이내 GOOD (극도로 후한 판정)
+        console.log(`[DEBUG] 판정 계산: rawTimeDiff=${timeDiff}ms, absTimeDiff=${absTimeDiff}ms`);
+        
+        // 정상적인 리듬게임 판정 (타겟바 두 배 길이 개념)
+        if (absTimeDiff <= 100) return 'PERFECT';  // 100ms 이내 PERFECT
+        else if (absTimeDiff <= 200) return 'GREAT';   // 200ms 이내 GREAT  
+        else if (absTimeDiff <= 300) return 'GOOD';    // 300ms 이내 GOOD
         else return 'BAD';
       }
 
@@ -990,7 +991,7 @@
             const timeDiff = Math.abs(currentTime - noteData.hitTime);
             laneNotes.push({ id: noteId, timeDiff, hitTime: noteData.hitTime, rawTimeDiff: currentTime - noteData.hitTime });
             
-            if (timeDiff < bestTimeDiff && timeDiff <= 2000) { // 2000ms 이내만 유효 (극도로 후한 설정)
+            if (timeDiff < bestTimeDiff && timeDiff <= 400) { // 400ms 이내만 유효 (적당히 후한 설정)
               bestTimeDiff = timeDiff;
               bestNote = { id: noteId, data: noteData, timeDiff: currentTime - noteData.hitTime };
             }
