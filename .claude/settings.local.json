@@ -15,7 +15,15 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(git pull:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(pkill:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(python3 -m pip install:*)",
+      "Bash(PYTHONPATH=/Users/kenlee/Desktop/Mol_Camp/RhythmGame/backend/ai-service/src uvicorn main:app --host 0.0.0.0 --port 8000)",
+      "Bash(python3:*)",
+      "Bash(node:*)",
+      "Bash(true)",
+      "Bash(kill:*)"
     ],
     "deny": []
   }

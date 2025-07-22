@@ -731,6 +731,71 @@
         margin-top: 5px;
       }
 
+      /* 카운트다운 오버레이 */
+      .countdown-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.8);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+      }
+
+      .countdown-overlay.show {
+        display: flex;
+      }
+
+      .countdown-number {
+        font-size: 8rem;
+        font-weight: bold;
+        color: #ff6b6b;
+        text-shadow: 0 0 20px rgba(255, 107, 107, 0.7);
+        animation: countdownPulse 1s ease-in-out;
+      }
+
+      @keyframes countdownPulse {
+        0% {
+          transform: scale(0.5);
+          opacity: 0;
+        }
+        50% {
+          transform: scale(1.2);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      /* 개발자용 버튼 */
+      .dev-button {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        padding: 10px 15px;
+        background: rgba(255, 0, 0, 0.9);
+        color: white;
+        border: 2px solid #ff4444;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 10001;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+      }
+
+      .dev-button:hover {
+        background: rgba(255, 50, 50, 0.9);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
+      }
+
       @keyframes comboBonusPop {
         0% {
           transform: translate(-50%, -50%) scale(0.5);
@@ -875,16 +940,16 @@
         <div class="hit-target hit-target-3"></div>
       </div>
 
-      <!-- 컨트롤 버튼들 -->
-      <div class="controls">
-        <button onclick="loadBeatmap()">Load Beatmap</button>
-        <button onclick="startGame()">Start Game</button>
-        <button onclick="resetGame()">Reset</button>
+      <!-- 카운트다운 표시 -->
+      <div class="countdown-overlay" id="countdown-overlay">
+        <div class="countdown-number" id="countdown-number">3</div>
       </div>
+
+
 
       <!-- 숨겨진 요소들 -->
       <audio id="gameAudio">
-        <source src="backend/audio_mp3/5NarVgDFNX0.mp3" type="audio/mpeg" />
+        <source src="audio/5NarVgDFNX0.mp3" type="audio/mpeg" />
       </audio>
 
       <div class="status">
@@ -932,6 +997,13 @@
       async function processYouTubeURL() {
         // [MOD] 전체 재작성
         const url = document.getElementById("youtube-url").value.trim();
+        
+        // 개발자용: 'a' 입력시 기존 비트맵 로드
+        if (url === "a") {
+          loadDevBeatmap();
+          return;
+        }
+        
         if (!isValidYouTubeURL(url)) {
           alert("올바른 YouTube URL을 입력해주세요!");
           return;
@@ -987,6 +1059,37 @@
           return;
         }
 
+        // 3초 카운트다운 시작
+        startCountdown();
+      }
+
+      function startCountdown() {
+        const overlay = document.getElementById("countdown-overlay");
+        const numberEl = document.getElementById("countdown-number");
+        
+        overlay.classList.add("show");
+        let count = 3;
+        numberEl.textContent = count;
+
+        const countdownInterval = setInterval(() => {
+          count--;
+          if (count > 0) {
+            numberEl.textContent = count;
+            // 애니메이션 재시작
+            numberEl.style.animation = "none";
+            requestAnimationFrame(() => {
+              numberEl.style.animation = "countdownPulse 1s ease-in-out";
+            });
+          } else {
+            clearInterval(countdownInterval);
+            overlay.classList.remove("show");
+            // 실제 게임 시작
+            startActualGame();
+          }
+        }, 1000);
+      }
+
+      function startActualGame() {
         gameStarted = true;
         startTime = Date.now();
         console.log(
@@ -1218,6 +1321,30 @@
       function updateUI() {
         document.getElementById("score").textContent = score.toLocaleString();
         document.getElementById("combo").textContent = combo;
+      }
+
+      // 개발자용 기존 비트맵 로드 함수
+      function loadDevBeatmap() {
+        // 기존 비트맵 직접 로드 (백엔드 없이)
+        loadBeatmapFromURL("/beatmaps/5ba220a0-5cfb-412e-a84c-6dc3a0b41d0e.json")
+          .then(() => {
+            document.getElementById("song-title").textContent = "빌려온고양이 (Dev)";
+            console.log("개발자용 비트맵 로드 완료");
+            
+            // 기존 음원 설정
+            const audio = document.getElementById("gameAudio");
+            audio.src = "audio/5NarVgDFNX0.mp3";
+            
+            // 게임 화면으로 전환
+            switchToGameScreen();
+            
+            // 1초 후 게임 시작
+            setTimeout(startGame, 1000);
+          })
+          .catch((error) => {
+            console.error("개발자용 비트맵 로드 실패:", error);
+            alert("비트맵을 불러올 수 없습니다.");
+          });
       }
 
       function handleNoteHit(lane) {

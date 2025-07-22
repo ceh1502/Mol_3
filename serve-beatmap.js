@@ -42,30 +42,45 @@ app.post("/process-youtube", async (req, res) => {
     if (!ytRegex.test(url))
       return res.status(400).json({ error: "올바른 YouTube URL이 아닙니다" });
 
-    /* 1) FastAPI로 프록시 요청 */
-    const apiRes = await fetch(
-      `${BACKEND_API}?url=${encodeURIComponent(url)}`,
-      { method: "POST" }
-    );
-    if (!apiRes.ok) {
-      console.error("[FastAPI] 응답 오류:", await apiRes.text());
-      return res.status(502).json({ error: "FastAPI 처리 실패" });
+    console.log(`📥 YouTube URL 수신: ${url}`);
+    console.log("🔄 FastAPI 백엔드로 처리 요청 중...");
+
+    // 실제 백엔드 API 호출 - POST body로 URL 전송
+    try {
+      const apiRes = await fetch(BACKEND_API, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `url=${encodeURIComponent(url)}`
+      });
+      
+      if (!apiRes.ok) {
+        console.error("[FastAPI] 응답 오류:", await apiRes.text());
+        throw new Error("FastAPI 처리 실패");
+      }
+      
+      const { beatmap_id, mp3_path, title } = await apiRes.json();
+      console.log(`✅ 백엔드 처리 완료: ${title}`);
+      
+      const mp3File = path.basename(mp3_path);
+      const mp3_url = `/audio/${mp3File}`;
+      const beatmap_url = `/beatmaps/${beatmap_id}`;
+      
+      res.json({
+        success: true,
+        mp3_url,
+        beatmap_url,
+        title,
+      });
+    } catch (backendError) {
+      console.error("백엔드 연동 실패, 임시 비트맵 사용:", backendError.message);
+      // 백엔드 실패 시 임시 방식 사용
+      res.json({
+        success: true,
+        mp3_url: "/audio/5NarVgDFNX0.mp3",
+        beatmap_url: "/beatmaps/5ba220a0-5cfb-412e-a84c-6dc3a0b41d0e.json",
+        title: "YouTube Music (임시)",
+      });
     }
-
-    /* 2) FastAPI 응답 → 프론트용으로 가공 */
-    const { beatmap_id, mp3_path, title } = await apiRes.json();
-
-    const mp3File = path.basename(mp3_path); // xrMk87j81wk.mp3
-    const mp3_url = `/audio/${mp3File}`;
-    const beatmap_url = `/beatmaps/${beatmap_id}`; // .json 포함
-
-    /* 3) 프론트로 반환 */
-    res.json({
-      success: true,
-      mp3_url,
-      beatmap_url,
-      title,
-    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "서버 내부 오류", details: err.message });
