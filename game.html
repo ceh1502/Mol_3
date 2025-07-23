@@ -1197,12 +1197,11 @@
         audio.currentTime = 0;
         audio.play().catch((e) => console.log("Audio play failed:", e));
 
-        // 모든 노트 생성 (3초 미리 생성)
+        // 모든 노트 생성
         beatmap.events.forEach((event, index) => {
-          const createDelay = Math.max(0, (event.time - 3) * 1000);
           setTimeout(() => {
             createNote(event.lane, event.type, event.time);
-          }, createDelay);
+          }, event.time * 1000);
         });
 
         console.log(`Game started! ${beatmap.events.length} notes scheduled.`);
@@ -1241,8 +1240,9 @@
 
         laneElement.appendChild(note);
 
-        // activeNotes에 추가 (단순하게: 노트 생성 + 3초 = 타겟 도달)
-        const hitTime = startTime + eventTime * 1000 + 3000;
+        // activeNotes에 추가 (게임 시작 시간 기준으로 정확한 히트 타이밍 계산)
+        // 노트 애니메이션이 3초이고, 타겟바 도달 시점 조정 (2.8초로 늦춤)
+        const hitTime = startTime + eventTime * 1000 + 2800;
         
         console.log(`[DEBUG] 노트 생성: eventTime=${eventTime}s, hitTime=${new Date(hitTime).toLocaleTimeString()}.${hitTime % 1000}, startTime=${new Date(startTime).toLocaleTimeString()}.${startTime % 1000}`);
         activeNotes.set(noteId, {
@@ -1522,11 +1522,21 @@
           );
           bestNote.data.missed = true;
           
-          // 노트 즉시 제거 (모든 판정에서)
-          if (bestNote.data.element && bestNote.data.element.parentNode) {
-            bestNote.data.element.parentNode.removeChild(bestNote.data.element);
-            console.log(`[DEBUG] 노트 제거됨: Lane ${lane}, 판정: ${judgment}`);
+          // 히트 효과 추가 (선택사항)
+          if (judgment !== "BAD") {
+            // 성공적인 히트의 경우 즉시 노트를 사라지게 함
+            bestNote.data.element.style.transform = "scale(1.2)";
+            bestNote.data.element.style.opacity = "0";
+            bestNote.data.element.style.transition = "all 0.1s ease-out";
           }
+          
+          // DOM에서 완전히 제거
+          setTimeout(() => {
+            if (bestNote.data.element.parentNode) {
+              bestNote.data.element.parentNode.removeChild(bestNote.data.element);
+              console.log(`[DEBUG] 노트 DOM에서 제거됨: ${bestNote.id}`);
+            }
+          }, judgment !== "BAD" ? 100 : 0); // 성공 시 짧은 애니메이션 후 제거
           
           activeNotes.delete(bestNote.id);
           console.log(
