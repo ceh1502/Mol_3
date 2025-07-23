@@ -1197,11 +1197,12 @@
         audio.currentTime = 0;
         audio.play().catch((e) => console.log("Audio play failed:", e));
 
-        // 모든 노트 생성 (원래 방식으로 복구)
+        // 모든 노트 생성 (3초 미리 생성)
         beatmap.events.forEach((event, index) => {
+          const createDelay = Math.max(0, (event.time - 3) * 1000);
           setTimeout(() => {
             createNote(event.lane, event.type, event.time);
-          }, event.time * 1000);
+          }, createDelay);
         });
 
         console.log(`Game started! ${beatmap.events.length} notes scheduled.`);
@@ -1521,21 +1522,11 @@
           );
           bestNote.data.missed = true;
           
-          // 히트 효과 추가 (선택사항)
-          if (judgment !== "BAD") {
-            // 성공적인 히트의 경우 즉시 노트를 사라지게 함
-            bestNote.data.element.style.transform = "scale(1.2)";
-            bestNote.data.element.style.opacity = "0";
-            bestNote.data.element.style.transition = "all 0.1s ease-out";
+          // 노트 즉시 제거 (모든 판정에서)
+          if (bestNote.data.element && bestNote.data.element.parentNode) {
+            bestNote.data.element.parentNode.removeChild(bestNote.data.element);
+            console.log(`[DEBUG] 노트 제거됨: Lane ${lane}, 판정: ${judgment}`);
           }
-          
-          // DOM에서 완전히 제거
-          setTimeout(() => {
-            if (bestNote.data.element.parentNode) {
-              bestNote.data.element.parentNode.removeChild(bestNote.data.element);
-              console.log(`[DEBUG] 노트 DOM에서 제거됨: ${bestNote.id}`);
-            }
-          }, judgment !== "BAD" ? 100 : 0); // 성공 시 짧은 애니메이션 후 제거
           
           activeNotes.delete(bestNote.id);
           console.log(
