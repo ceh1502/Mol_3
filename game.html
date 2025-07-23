@@ -1197,23 +1197,11 @@
         audio.currentTime = 0;
         audio.play().catch((e) => console.log("Audio play failed:", e));
 
-        // 모든 노트 생성 - 3초 미리 생성하여 화면 상단에서 떨어지게 함
+        // 모든 노트 생성 (원래 방식으로 복구)
         beatmap.events.forEach((event, index) => {
-          // 노트가 3초 전에 생성되어 정확한 타이밍에 히트존에 도달하도록 수정
-          let noteCreateDelay;
-          
-          if (event.time <= 3) {
-            // 첫 3초 내의 노트들은 즉시 생성하되 히트 타이밍은 정확히 계산
-            noteCreateDelay = 0;
-            console.log(`[DEBUG] 초기 노트 처리: eventTime=${event.time}s, 즉시 생성`);
-          } else {
-            // 3초 이후 노트들은 정상적으로 3초 전에 미리 생성
-            noteCreateDelay = (event.time - 3) * 1000;
-          }
-          
           setTimeout(() => {
             createNote(event.lane, event.type, event.time);
-          }, noteCreateDelay);
+          }, event.time * 1000);
         });
 
         console.log(`Game started! ${beatmap.events.length} notes scheduled.`);
@@ -1252,9 +1240,8 @@
 
         laneElement.appendChild(note);
 
-        // activeNotes에 추가 (노트가 타겟바에 도달하는 시점 = 생성 시점 + 3초)
-        const noteCreateTime = Date.now(); // 실제 노트 생성 시점
-        const hitTime = noteCreateTime + 3000; // 3초 후 타겟바 도달
+        // activeNotes에 추가 (단순하게: 노트 생성 + 3초 = 타겟 도달)
+        const hitTime = startTime + eventTime * 1000 + 3000;
         
         console.log(`[DEBUG] 노트 생성: eventTime=${eventTime}s, hitTime=${new Date(hitTime).toLocaleTimeString()}.${hitTime % 1000}, startTime=${new Date(startTime).toLocaleTimeString()}.${startTime % 1000}`);
         activeNotes.set(noteId, {
