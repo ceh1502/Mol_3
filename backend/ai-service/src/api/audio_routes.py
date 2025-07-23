@@ -1,4 +1,4 @@
-# backend/ai-service/src/api/audio.py
+# backend/ai-service/src/api/audio_routes.py
 """통합 오디오 유틸리티 라우터
 
 1. /download  : YouTube URL → mp3 저장 → wav 변환 경로 반환 (기존 로직 그대로)
@@ -7,7 +7,7 @@
 mp3는 남겨 두어 클라이언트에서 직접 스트리밍/다운로드에 사용하도록 합니다.
 """
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks
+from fastapi import APIRouter, HTTPException, BackgroundTasks, Form
 from fastapi.concurrency import run_in_threadpool
 
 from audio.youtube_downloader import YoutubeDownloader
@@ -55,7 +55,7 @@ async def download_audio(url: str):
 # 2) 통합 한방 엔드포인트
 # ──────────────────────────────────────────────────────────
 @router.post("/generate", tags=["audio"], summary="YouTube → mp3 & beatmap(JSON) 생성")
-async def generate_beatmap(url: str, background_tasks: BackgroundTasks):
+async def generate_beatmap(background_tasks: BackgroundTasks, url: str = Form(...)):
     """유튜브 링크 하나만으로 mp3 + 비트맵(json)까지 생성한다.
 
     • mp3는 SAVE_MP3_DIR 에 남겨두고, wav 는 비트맵 생성 후 삭제한다.
