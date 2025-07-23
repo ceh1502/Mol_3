@@ -23,7 +23,8 @@
       "Bash(python3:*)",
       "Bash(node:*)",
       "Bash(true)",
-      "Bash(kill:*)"
+      "Bash(kill:*)",
+      "Bash(find:*)"
     ],
     "deny": []
   }
