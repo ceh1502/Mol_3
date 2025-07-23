@@ -1323,7 +1323,8 @@
       function restartGame() {
         resetGame();
         if (beatmap) {
-          startGame();
+          // 3초 카운트다운부터 다시 시작
+          startCountdown();
         }
       }
 
