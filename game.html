@@ -1192,10 +1192,12 @@
         document.getElementById("combo").textContent = "0";
         document.getElementById("status").textContent = "Playing...";
 
-        // 음악 재생
+        // 음악 재생 (2.8초 후 시작하여 노트 타이밍과 맞춤)
         const audio = document.getElementById("gameAudio");
         audio.currentTime = 0;
-        audio.play().catch((e) => console.log("Audio play failed:", e));
+        setTimeout(() => {
+          audio.play().catch((e) => console.log("Audio play failed:", e));
+        }, 2800);
 
         // 모든 노트 생성
         beatmap.events.forEach((event, index) => {
@@ -1448,11 +1450,12 @@
         for (let [noteId, noteData] of activeNotes) {
           if (noteData.lane === lane && !noteData.missed) {
             const timeDiff = Math.abs(currentTime - noteData.hitTime);
+            const rawTimeDiff = currentTime - noteData.hitTime;
             laneNotes.push({
               id: noteId,
               timeDiff,
               hitTime: noteData.hitTime,
-              rawTimeDiff: currentTime - noteData.hitTime,
+              rawTimeDiff: rawTimeDiff,
             });
 
             if (timeDiff < bestTimeDiff && timeDiff <= 600) {
